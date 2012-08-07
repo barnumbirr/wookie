@@ -69,23 +69,23 @@ def feed_refresh():
     #    days, remainder1 = divmod(remainder, 86400)
     #    hours, remainder2 = divmod(remainder1, 3600)
     #    minutes, seconds = divmod(remainder2, 60)
-	#
+    #
 	#if pre < 60:
-    #	pretime = '%ssecs after Pre' % (seconds)
+	#	pretime = '%ssecs after Pre' % (seconds)
 	#elif pre < 3600:
-    #	pretime = '%smin %ssecs after Pre' % (minutes, seconds)
+	#	pretime = '%smin %ssecs after Pre' % (minutes, seconds)
 	#elif pre < 86400:
-    #	pretime = '%sh %smin after Pre' % (hours, minutes)
+	#	pretime = '%sh %smin after Pre' % (hours, minutes)
 	#elif pre < 172800:
 	#	pretime = '%sjour %sh after Pre' % (days, hours)
 	#elif pre < 31556926:
-    #	pretime = '%sjours %sh after Pre' % (days, hours)
+	#	pretime = '%sjours %sh after Pre' % (days, hours)
 	#elif pre < 63113852:
-    #	pretime = '%san %sjours after Pre' % (years, days)
+	#	pretime = '%san %sjours after Pre' % (years, days)
 	#else:
-   	#	pretime = '%sans %sjours after Pre' % (years, days)
+	#	pretime = '%sans %sjours after Pre' % (years, days)
 	#
-    #msgqueue.append("[" + category + "]" + " - " + url + title + " [" + size + "] " + pretime)
+	#msgqueue.append("[" + category + "]" + " - " + url + title + " [" + size + "] " + pretime)
     #######################################################
 
     msgqueue.append( entry.title.encode('utf-8') + " : " + entry.link.encode('utf-8') )
