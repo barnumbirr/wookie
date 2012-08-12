@@ -99,7 +99,7 @@ def feed_refresh():
 	elif pre < 63113852:
         	pretime = '%san %sjours after Pre' % (years, days)
 	else:
-   			pretime = '%sans %sjours after Pre' % (years, days)
+   		pretime = '%sans %sjours after Pre' % (years, days)
     
 
     msgqueue.append("[" + category + "]" + " - " + url + title + " [" + size + "] " + pretime)
