@@ -1,5 +1,11 @@
 #!/usr/bin/python
-# IRC RSSbot v0.4
+
+"""
+IRC RSSbot v1.0 stable
+Licensed under the GNU General Public License v3
+
+[c0da, AUGUST 2012]
+"""
 
 import irclib
 import feedparser
@@ -10,15 +16,28 @@ import os
 import threading
 import time
 
-channel_list = [ "#channel" ] 
-feed_list = [ "rss_feed"]
+#CONFiG:
+network = 'irc.example.net'
+port = 6667
+channels = ['#channel']
+nick = 'botnick'
+name = 'IRC RSSbot v1.0 stable'
+password = 'NickServ-password'
+
+feed_list = [ "feed_url"]
 old_entries_file = os.environ.get("HOME") + "/.b0t/old-feed-entries"
 
+#CREATE iRC OBJECT:
+irclib.DEBUG = 1
 irc = irclib.IRC()
-server = irc.server()
 
-server.connect( "host", 6667, "nick" ) 
-server.privmsg( "NickServ", "identify password" )
+#CREATE SERVER OBJECT, CONNECT TO SERVER AND JOiN CHANNELS
+server = irc.server()
+server.connect(network, port, nick, ircname=name, ssl=False)
+if password: server.privmsg("NickServ","IDENTIFY %s" % password)
+time.sleep(10)
+for channel in channels:
+	server.join(channel)
 
 msgqueue = []
 
@@ -39,56 +58,51 @@ def feed_refresh():
     #print entry.title + "\n"
     FILE.write( id + "\n" )
     FILE.close()
-    #######################################################
-    #personnal usage, most users won't need this
-    #######################################################
-    #title = entry.title.encode('utf-8')
-    #url = entry.link.encode('utf-8')
-    #category = title.split(' -', 1 )[0]
-    #title = title.split('- ', 1 )[1]
-    #title = title.replace(' ', '.')
-    #description = entry.description.encode('utf-8')
-    #result = re.search(r'Size : ([0-9]+\.?[0-9]*? [A-Za-z]{2})',description)
-    #size = result.group(1)
-    #entryDate = d.entries[0].published
-    #ReleaseDate = entryDate.split(' +', 1 )[0]
-    #gReleaseDate = re.search(r'Ajout&eacute; le : ([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2})', description)
-    #gPreDate = re.search(r'PreTime : ([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2})', description)
-    #if gPreDate is None:
-    #    pretime = ""
-    #else:
-    #   sPreDate = gPreDate.group(1)
-    #    sReleaseDate = gReleaseDate.group(1)
-    #    fmt = '%Y-%m-%d %H:%M:%S'
-    #    releaseDate = datetime.strptime(sReleaseDate, "%Y-%m-%d %H:%M:%S")
-    #    preDate = datetime.strptime(sPreDate, "%Y-%m-%d %H:%M:%S")
-    #    def timestamp(date):
-    #       return calendar.timegm(date.timetuple())
-    #    pre = (timestamp(releaseDate)-timestamp(preDate))
-    #    years, remainder = divmod(pre, 31556926)
-    #    days, remainder1 = divmod(remainder, 86400)
-    #    hours, remainder2 = divmod(remainder1, 3600)
-    #    minutes, seconds = divmod(remainder2, 60)
-    #
-    #if pre < 60:
-    #   pretime = '%ssecs after Pre' % (seconds)
-    #elif pre < 3600:
-    #   pretime = '%smin %ssecs after Pre' % (minutes, seconds)
-    #elif pre < 86400:
-    #   pretime = '%sh %smin after Pre' % (hours, minutes)
-    #elif pre < 172800:
-    #   pretime = '%sjour %sh after Pre' % (days, hours)
-    #elif pre < 31556926:
-    #   pretime = '%sjours %sh after Pre' % (days, hours)
-    #elif pre < 63113852:
-    #   pretime = '%san %sjours after Pre' % (years, days)
-    #else:
-    #   pretime = '%sans %sjours after Pre' % (years, days)
-    #
-    #msgqueue.append("[" + category + "]" + " - " + url + title + " [" + size + "] " + pretime)
-    #######################################################
+    title = entry.title.encode('utf-8')
+    url = entry.link.encode('utf-8')
+    category = title.split(' -', 1 )[0]
+    title = title.split('- ', 1 )[1]
+    title = title.replace(' ', '.')
+    description = entry.description.encode('utf-8')
+    result = re.search(r'Size : ([0-9]+\.?[0-9]*? [A-Za-z]{2})',description)
+    size = result.group(1)
+    entryDate = d.entries[0].published
+    ReleaseDate = entryDate.split(' +', 1 )[0]
+    gReleaseDate = re.search(r'Ajout&eacute; le : ([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2})', description)
+    gPreDate = re.search(r'PreTime : ([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2})', description)
+    if gPreDate is None:
+        pretime = ""
+    else:
+        sPreDate = gPreDate.group(1)
+        sReleaseDate = gReleaseDate.group(1)
+        fmt = '%Y-%m-%d %H:%M:%S'
+        releaseDate = datetime.strptime(sReleaseDate, "%Y-%m-%d %H:%M:%S")
+        preDate = datetime.strptime(sPreDate, "%Y-%m-%d %H:%M:%S")
+        def timestamp(date):
+           return calendar.timegm(date.timetuple())
+        pre = (timestamp(releaseDate)-timestamp(preDate))
+        years, remainder = divmod(pre, 31556926)
+        days, remainder1 = divmod(remainder, 86400)
+        hours, remainder2 = divmod(remainder1, 3600)
+        minutes, seconds = divmod(remainder2, 60)
+		 
+	if pre < 60:
+        	 pretime = '%ssecs after Pre' % (seconds)
+	elif pre < 3600:
+        	pretime = '%smin %ssecs after Pre' % (minutes, seconds)
+	elif pre < 86400:
+        	pretime = '%sh %smin after Pre' % (hours, minutes)
+	elif pre < 172800:
+		    pretime = '%sjour %sh after Pre' % (days, hours)
+	elif pre < 31556926:
+        	pretime = '%sjours %sh after Pre' % (days, hours)
+	elif pre < 63113852:
+        	pretime = '%san %sjours after Pre' % (years, days)
+	else:
+   			pretime = '%sans %sjours after Pre' % (years, days)
+    
 
-    msgqueue.append( entry.title.encode('utf-8') + " : " + entry.link.encode('utf-8') )
+    msgqueue.append("[" + category + "]" + " - " + url + title + " [" + size + "] " + pretime)
 
    if NextFeed:
      break;
@@ -96,7 +110,7 @@ def feed_refresh():
  t = threading.Timer( 5.0, feed_refresh ) 
  t.start()
 
-for channel in channel_list:
+for channel in channels:
   server.join( channel )
 
 feed_refresh()
@@ -104,8 +118,8 @@ feed_refresh()
 while 1:
  while len(msgqueue) > 0:
   msg = msgqueue.pop()
-  for channel in channel_list:
+  for channel in channels:
    server.privmsg( channel, msg )
- time.sleep(1) 
+ time.sleep(1) # TODO: Fix bad code
  irc.process_once()
  time.sleep(1)
