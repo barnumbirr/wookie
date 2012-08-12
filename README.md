@@ -1,3 +1,4 @@
 **iRC RSSbot:**
 
-iRC bot that keeps track of RSS feeds. You have to install **irclib/feedparser** python modules to run the bot. Replace values where needed.
+iRC bot that keeps track of RSS feeds. **irclib/feedparser** python modules requiered.
+Designed to announce new torrent releases in given iRC channel.
