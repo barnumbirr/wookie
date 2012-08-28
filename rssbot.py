@@ -22,10 +22,12 @@ port = 6667
 channels = ['#channel']
 nick = 'botnick'
 name = 'IRC RSSbot v1.0 stable'
-password = 'NickServ-password'
+password = 'nickservpassword'
 
-feed_list = [ "feed_url"]
-old_entries_file = os.environ.get("HOME") + "/.b0t/old-feed-entries"
+announce_list = [ "url_feed_1"]
+request_list = [ "url_feed_2"]
+announce_entries_file = os.environ.get("HOME") + "/.b0t/announce-entries"
+request_entries_file = os.environ.get("HOME") + "/.b0t/request-entries"
 
 #CREATE iRC OBJECT:
 irclib.DEBUG = 1
@@ -35,18 +37,18 @@ irc = irclib.IRC()
 server = irc.server()
 server.connect(network, port, nick, ircname=name, ssl=False)
 if password: server.privmsg("NickServ","IDENTIFY %s" % password)
-time.sleep(10)
+time.sleep(5)
 for channel in channels:
 	server.join(channel)
 
 msgqueue = []
 
-def feed_refresh():
+def announce_refresh():
  #print "Test"
- FILE = open( old_entries_file, "r" )
+ FILE = open( announce_entries_file, "r" )
  filetext = FILE.read()
  FILE.close()
- for feed in feed_list:
+ for feed in announce_list:
   NextFeed = False
   d = feedparser.parse( feed )
   for entry in d.entries:
@@ -54,7 +56,7 @@ def feed_refresh():
    if id in filetext:
     NextFeed = True
    else:
-    FILE = open( old_entries_file, "a" )
+    FILE = open( announce_entries_file, "a" )
     #print entry.title + "\n"
     FILE.write( id + "\n" )
     FILE.close()
@@ -104,16 +106,43 @@ def feed_refresh():
 
     msgqueue.append("[" + category + "]" + " - " + url + title + " [" + size + "] " + pretime)
 
-   if NextFeed:
-     break;
+ 
+def request_refresh():
+ #print "Test"
+ FILE = open( request_entries_file, "r" )
+ filetext = FILE.read()
+ FILE.close()
+ for feed in request_list:
+  NextFeed = False
+  d = feedparser.parse( feed )
+  for entry in d.entries:
+   id = entry.link.encode('utf-8')+entry.title.encode('utf-8')
+   if id in filetext:
+    NextFeed = True
+   else:
+    FILE = open( request_entries_file, "a" )
+    #print entry.title + "\n"
+    FILE.write( id + "\n" )
+    FILE.close()
+    title = entry.title.encode('utf-8')
+    url = entry.link.encode('utf-8')
+    title = title.split(' - ', 1 )[0]
 
- t = threading.Timer( 5.0, feed_refresh ) 
- t.start()
+    msgqueue.append("Requests : " + title + " " + url)
+
+   if NextFeed:
+    break;
+
+ t1 = threading.Timer( 5.0, announce_refresh )
+ t2 = threading.Timer( 5.0, request_refresh )
+ t1.start()
+ t2.start()
 
 for channel in channels:
   server.join( channel )
 
-feed_refresh()
+announce_refresh()
+request_refresh()
 
 while 1:
  while len(msgqueue) > 0:
