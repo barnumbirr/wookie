@@ -104,7 +104,7 @@ def announce_refresh():
    		pretime = '%sans %sjours after Pre' % (years, days)
     
 
-    msgqueue.append("[" + category + "]" + " - " + url + title + " [" + size + "] " + pretime)
+    msgqueue.append("\033[37m" + "[" + "\033[31m" + category + "\033[37m" + "]" + " - " + "\033[35m" + url + title + " " + "\033[37m" + "[" + size + "] " + pretime)
 
  
 def request_refresh():
