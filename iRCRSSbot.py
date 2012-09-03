@@ -4,7 +4,7 @@
 IRC RSSbot v1.0 stable
 Licensed under the GNU General Public License v3
 
-[c0da, AUGUST 2012]
+[c0da, SEPTEMBER 2012]
 """
 
 import irclib
