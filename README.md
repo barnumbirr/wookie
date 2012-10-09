@@ -7,4 +7,4 @@ Designed to announce new torrent releases in given iRC channel.
 
 
 **ATTENTION: In '/root/.b0t/announce-entries', 'announce-entries' is a file, not a directory.**   
-**Same thing for 'request-entries'**
+           **Same thing for 'request-entries'**
