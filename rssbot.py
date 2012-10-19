@@ -1,4 +1,5 @@
-#!/usr/bin/python
+#!/usr/bin/env/python
+# -*- coding: utf-8 -*-
 
 """
 IRC RSSbot v1.0 stable
@@ -24,8 +25,8 @@ nick = 'botnick'
 name = 'IRC RSSbot v1.0 stable'
 password = 'nickservpassword'
 
-announce_list = [ "url_feed_1"]
-request_list = [ "url_feed_2"]
+announce_list = ["url_feed_1"]
+request_list = ["url_feed_2"]
 announce_entries_file = os.environ.get("HOME") + "/.b0t/announce-entries"
 request_entries_file = os.environ.get("HOME") + "/.b0t/request-entries"
 
@@ -44,21 +45,19 @@ for channel in channels:
 msgqueue = []
 
 def announce_refresh():
- #print "Test"
- FILE = open( announce_entries_file, "r" )
+ FILE = open(announce_entries_file, "r")
  filetext = FILE.read()
  FILE.close()
  for feed in announce_list:
   NextFeed = False
-  d = feedparser.parse( feed )
+  d = feedparser.parse(feed)
   for entry in d.entries:
    id = entry.link.encode('utf-8')+entry.title.encode('utf-8')
    if id in filetext:
     NextFeed = True
    else:
-    FILE = open( announce_entries_file, "a" )
-    #print entry.title + "\n"
-    FILE.write( id + "\n" )
+    FILE = open(announce_entries_file, "a")
+    FILE.write(id + "\n")
     FILE.close()
     title = entry.title.encode('utf-8')
     url = entry.link.encode('utf-8')
@@ -108,38 +107,36 @@ def announce_refresh():
 
  
 def request_refresh():
- #print "Test"
- FILE = open( request_entries_file, "r" )
+ FILE = open(request_entries_file, "r")
  filetext = FILE.read()
  FILE.close()
  for feed in request_list:
   NextFeed = False
-  d = feedparser.parse( feed )
+  d = feedparser.parse(feed)
   for entry in d.entries:
    id = entry.link.encode('utf-8')+entry.title.encode('utf-8')
    if id in filetext:
     NextFeed = True
    else:
-    FILE = open( request_entries_file, "a" )
-    #print entry.title + "\n"
-    FILE.write( id + "\n" )
+    FILE = open(request_entries_file, "a")
+    FILE.write(id + "\n")
     FILE.close()
     title = entry.title.encode('utf-8')
     url = entry.link.encode('utf-8')
     title = title.split(' - ', 1 )[0]
 
-    msgqueue.append("Requests : " + title + " " + url)
+    msgqueue.append("\x02" + "Requests : " + "\x02" + title + " " + url)
 
    if NextFeed:
     break;
 
- t1 = threading.Timer( 5.0, announce_refresh )
- t2 = threading.Timer( 5.0, request_refresh )
+ t1 = threading.Timer(5.0, announce_refresh)
+ t2 = threading.Timer(5.0, request_refresh)
  t1.start()
  t2.start()
 
 for channel in channels:
-  server.join( channel )
+  server.join(channel)
 
 announce_refresh()
 request_refresh()
@@ -148,7 +145,7 @@ while 1:
  while len(msgqueue) > 0:
   msg = msgqueue.pop()
   for channel in channels:
-   server.privmsg( channel, msg )
- time.sleep(1) # TODO: Fix bad code
+   server.privmsg(channel, msg)
+ time.sleep(1)
  irc.process_once()
  time.sleep(1)
