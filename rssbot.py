@@ -135,9 +135,6 @@ def request_refresh():
  t1.start()
  t2.start()
 
-for channel in channels:
-  server.join(channel)
-
 announce_refresh()
 request_refresh()
 
