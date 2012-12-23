@@ -2,10 +2,10 @@
 # -*- coding: utf-8 -*-
 
 """
-IRC RSSbot v1.0 stable
+IRC RSSbot v1.2 stable
 Licensed under the GNU General Public License v3
 
-[c0da, SEPTEMBER 2012]
+[c0da, DECEMBRE 2012]
 """
 
 import irclib
