@@ -18,21 +18,26 @@ import threading
 import time
 
 #CONFiG:
-network = 'irc.example.net'
+network = 'irc.example.com'
 port = 6667
 channels = ['#channel']
 nick = 'botnick'
-name = 'IRC RSSbot v1.0 stable'
-password = 'nickservpassword'
+name = 'iRC-RSSBOT v1.2 (stable) available at https://github.com/c0ding/iRC-RSSbot'
+password = 'nickserv password'
 
 announce_list = ["url_feed_1"]
 request_list = ["url_feed_2"]
 announce_entries_file = os.environ.get("HOME") + "/.b0t/announce-entries"
 request_entries_file = os.environ.get("HOME") + "/.b0t/request-entries"
 
-#CREATE iRC OBJECT:
+#CTCP CAPABiLiTY AND DEBUG
+def handleCTCP(connection, event):
+	if event.arguments() [0].upper() == 'VERSION':
+		connection.ctcp_reply ( event.source().split ( '!' ) [ 0 ], 'iRC-RSSBOT v1.2 (stable) available at https://github.com/c0ding/iRC-RSSbot.')
+		
 irclib.DEBUG = 1
 irc = irclib.IRC()
+irc.add_global_handler ('ctcp', handleCTCP)
 
 #CREATE SERVER OBJECT, CONNECT TO SERVER AND JOiN CHANNELS
 server = irc.server()
