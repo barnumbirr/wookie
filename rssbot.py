@@ -33,7 +33,7 @@ request_entries_file = os.environ.get("HOME") + "/.b0t/request-entries"
 #CTCP CAPABiLiTY AND DEBUG
 def handleCTCP(connection, event):
 	if event.arguments() [0].upper() == 'VERSION':
-		connection.ctcp_reply ( event.source().split ( '!' ) [ 0 ], 'iRC-RSSBOT v1.2 (stable) available at https://github.com/c0ding/iRC-RSSbot.')
+		connection.ctcp_reply ( event.source().split ( '!' ) [ 0 ], 'VERSION RSSBOT v1.2 (stable) available at https://github.com/c0ding/iRC-RSSbot.')
 		
 irclib.DEBUG = 1
 irc = irclib.IRC()
