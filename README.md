@@ -23,4 +23,4 @@ Designed to announce new torrent releases in given iRC channel.
 
 ```
 
-All credit for the wookie icon go to <a href="http://www.jameshance.com/">James Hance</a>.
+All credit for the wookie icon goes to <a href="http://www.jameshance.com/">James Hance</a>.
