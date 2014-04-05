@@ -1,14 +1,5 @@
-=============================
-<h1><img src="https://raw.github.com/c0ding/wookie/master/doc/wookie.png" height=55 alt="wookie" title="WDCinfo"> WDCiNFO</h1>
-
-iRC bot that keeps track of RSS feeds. **irclib/feedparser** python modules required.  
-Designed to announce new torrent releases in given iRC channel.  
-
-## License
-
-```
   Apache v2.0 License
-  Copyright 2014 Martin Simon
+  Copyright 2013 Martin Simon
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -21,5 +12,3 @@ Designed to announce new torrent releases in given iRC channel.
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
-
-```
