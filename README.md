@@ -1,4 +1,3 @@
-=============================
 <h1><img src="https://raw.github.com/c0ding/wookie/master/doc/wookie.png" height=70 alt="wookie" title="wookie"> wookie</h1>
 
 **wookie** is an iRC bot that keeps track of RSS feeds. 
