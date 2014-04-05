@@ -1,7 +1,14 @@
 <h1><img src="https://raw.github.com/c0ding/wookie/master/doc/wookie.png" height=70 alt="wookie" title="wookie">wookie</h1>
 
-**wookie** is an iRC bot that keeps track of RSS feeds. 
-Designed to announce new torrent releases in given iRC channel.  
+**wookie** is a simple, open source, easy-to-use iRC RSS bot written in Python.
+It was designed to announce new torrent releases in a given iRC channel.
+
+## Features
+
+* Easy configuration
+* No heavy database required
+* SSL support
+* Support for additional commands
 
 ## License
 
