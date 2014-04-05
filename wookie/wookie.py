@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 __appname__ = "wookie"
-__version__ = "v.2.0"
+__version__ = "v.2.1"
 __author__  = "@c0ding"
 __date__    = "April 2014"
 __license__ = "Apache v2.0 License"
@@ -22,7 +22,7 @@ network = 'irc.example.net'
 port = 6667
 channels = ['#channel']
 nick = 'wookie'
-name = 'wookie v.2.0 is available at https://github.com/c0ding/wookie'
+name = 'wookie v.2.1 is available at https://github.com/c0ding/wookie'
 password = 'NickServ password'
 
 announce_list = ["url_feed_1"]
@@ -35,7 +35,7 @@ def on_pubmsg(connection, event):
 	if event.arguments() [0].lower() == '.help':
 		connection.privmsg(channel, "\x02Available commands are\x02: .help \x02||\x02 .version \x02||\x02 .quit")
 	if event.arguments() [0].lower() == '.version':
-		connection.privmsg(channel, "wookie v.2.0 is available at https://github.com/c0ding/wookie")
+		connection.privmsg(channel, "wookie v.2.1 is available at https://github.com/c0ding/wookie")
 	if event.arguments() [0].lower() == '.quit':
 		connection.quit()
 		
@@ -45,12 +45,17 @@ def on_invite(connection, event):
 def on_kick(server, event):
 	for channel in channels:
 		server.join(channel)
+		
+def on_ctcp(connection, event):
+	if event.arguments() [0].upper() == 'VERSION':
+		connection.ctcp_reply(event.source().split('!') [0], 'wookie v.2.1 is available at https://github.com/c0ding/wookie')
 
 irclib.DEBUG = 1
 irc = irclib.IRC()
 irc.add_global_handler ('pubmsg', on_pubmsg)
 irc.add_global_handler ('invite', on_invite)
 irc.add_global_handler ('kick', on_kick)
+irc.add_global_handler ('ctcp', on_ctcp)
 
 #CREATE SERVER OBJECT, CONNECT TO SERVER AND JOiN CHANNELS
 server = irc.server()
