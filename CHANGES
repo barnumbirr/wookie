@@ -1,0 +1,8 @@
+Version 2.0
+=============
+
+ April 2014
+
+	* added command support
+	* fixed ugly ass indentation
+	* rename project from iRC-RSSbot to wookie
