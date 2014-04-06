@@ -9,7 +9,6 @@ __license__ = "Apache v2.0 License"
 
 import re
 import os
-import sys
 import time
 import irclib
 import calendar
@@ -36,6 +35,11 @@ def on_pubmsg(connection, event):
 		connection.privmsg(channel, "\x02Available commands are\x02: .help \x02||\x02 .version \x02||\x02 .quit")
 	if event.arguments() [0].lower() == '.version':
 		connection.privmsg(channel, "wookie v.2.1 is available at https://github.com/c0ding/wookie")
+	if event.arguments() [0].lower() == ".restart":
+		connection.quit()
+		wookie_dir = os.environ.get("HOME") + "/path/to/wookie/dir"
+		os.chdir(wookie_dir)
+		os.system("nohup python wookie.py &")
 	if event.arguments() [0].lower() == '.quit':
 		connection.quit()
 		
@@ -169,3 +173,4 @@ while 1:
     time.sleep(1)
     irc.process_once()
     time.sleep(1)
+
