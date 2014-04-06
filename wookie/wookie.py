@@ -15,6 +15,9 @@ import calendar
 import threading
 import feedparser
 from datetime import datetime
+from datetime import timedelta
+
+wookie_start_time = time.time()
 
 #CONFiG:
 network = 'irc.example.net'
@@ -32,9 +35,13 @@ request_entries_file = os.environ.get("HOME") + "/.b0t/request-entries"
 #COMMAND CAPABiLiTY AND DEBUG
 def on_pubmsg(connection, event):
 	if event.arguments() [0].lower() == '.help':
-		connection.privmsg(channel, "\x02Available commands are\x02: .help \x02||\x02 .version \x02||\x02 .quit")
+		connection.privmsg(channel, "\x02Available commands are\x02: .help || .version || .uptime || .restart || .quit")
 	if event.arguments() [0].lower() == '.version':
-		connection.privmsg(channel, "wookie v.2.1 is available at https://github.com/c0ding/wookie")
+		connection.privmsg(channel, "\x02Version\x02: wookie v.2.1 is available at https://github.com/c0ding/wookie")
+	if event.arguments() [0].lower() == '.uptime':
+		uptime_raw = round(time.time() - wookie_start_time)
+		uptime = timedelta(seconds=uptime_raw)
+		connection.privmsg(channel, "\x02Uptime\x02: up {}".format(uptime))
 	if event.arguments() [0].lower() == ".restart":
 		connection.quit()
 		wookie_dir = os.environ.get("HOME") + "/path/to/wookie/dir"
