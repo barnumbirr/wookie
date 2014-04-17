@@ -71,7 +71,8 @@ irc.add_global_handler ('ctcp', on_ctcp)
 #CREATE SERVER OBJECT, CONNECT TO SERVER AND JOiN CHANNELS
 server = irc.server()
 server.connect(network, port, nick, ircname=name, ssl=False)
-if password: server.privmsg("NickServ","IDENTIFY %s" % password)
+if password:
+	server.privmsg("NickServ","IDENTIFY %s" % password)
 time.sleep(5)
 for channel in channels:
     server.join(channel)
@@ -172,12 +173,15 @@ def request_refresh():
 announce_refresh()
 request_refresh()
 
-while 1:
-    while len(msgqueue) > 0:
-        msg = msgqueue.pop()
-        for channel in channels:
-            server.privmsg(channel, msg)
-    time.sleep(1)
-    irc.process_once()
-    time.sleep(1)
+def main():
+	while 1:
+	    while len(msgqueue) > 0:
+	        msg = msgqueue.pop()
+	        for channel in channels:
+	            server.privmsg(channel, msg)
+	    time.sleep(1)
+	    irc.process_once()
+	    time.sleep(1)
 
+if __name__ == "__main__":
+	main()

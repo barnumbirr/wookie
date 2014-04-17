@@ -1,27 +1,27 @@
   
   Analyzing: https://github.com/c0ding/wookie/wookie.py
 
-              Total Lines: 183
+              Total Lines: 187
 
-               Code Lines: 155 (84.6994%)
-              Blank Lines: 24 (13.1147%)
+               Code Lines: 159 (85.0267%)
+              Blank Lines: 24 (12.8342%)
 
-            Comment Lines: 4 (2.18579%)
+            Comment Lines: 4 (2.13903%)
          Doc String Lines: 0 (0.0%)
           Inline Comments: 2
               Doc Strings: 0
            Total Comments: 6
 
         Longest Code Line: 176
-       Shortest Code Line: 8 [while 1:]
+       Shortest Code Line: 6 [main()]
 
      Longest Comment Line: 58
     Shortest Comment Line: 8 [#CONFiG:]
 
                   Imports: 9
-                Functions: 7
+                Functions: 8
                   Classes: 0
-            If Statements: 21
+            If Statements: 22
            Try Statements: 0
         Except Statements: 0
          Print Statements: 0
