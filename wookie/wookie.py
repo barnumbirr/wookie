@@ -104,7 +104,7 @@ def announce_refresh():
                 size = result.group(1)
                 entryDate = d.entries[0].published
                 ReleaseDate = entryDate.split(' +', 1 )[0]
-                gReleaseDate = re.search(r'Ajout&eacute; le : ([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2})', description)
+                gReleaseDate = re.search(r'Ajouté le : ([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2})', description)
                 gPreDate = re.search(r'PreTime : ([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2})', description)
                 if gPreDate is None:
                     pretime = ""
