@@ -30,4 +30,14 @@ It was designed to announce new torrent releases in a given iRC channel.
 
 ```
 
+## Buy me a coffee?
+
+If you feel like buying me a coffee (or a beer?), donations are welcome:
+
+```
+WDC : WbcWJzVD8yXt3yLnnkCZtwQo4YgSUdELkj
+HBN : F2Zs4igv8r4oJJzh4sh4bGmeqoUxLQHPki
+DOGE: DRBkryyau5CMxpBzVmrBAjK6dVdMZSBsuS
+```
+
 All credit for the wookie icon goes to <a href="http://www.jameshance.com/">James Hance</a>.
