@@ -61,21 +61,25 @@ def on_ctcp(connection, event):
 	if event.arguments() [0].upper() == 'VERSION':
 		connection.ctcp_reply(event.source().split('!') [0], 'wookie v.2.1 is available at https://github.com/c0ding/wookie')
 
+def on_welcome(server, event):
+    if password:
+        server.privmsg("nickserv", "IDENTIFY %s" % password)
+    server.privmsg("chanserv", "SET irc_auto_rejoin ON")
+    server.privmsg("chanserv", "SET irc_join_delay 0")
+    for channel in channels:
+        server.join(channel)
+
 irclib.DEBUG = 1
 irc = irclib.IRC()
 irc.add_global_handler ('pubmsg', on_pubmsg)
 irc.add_global_handler ('invite', on_invite)
+irc.add_global_handler ('welcome', on_welcome)
 irc.add_global_handler ('kick', on_kick)
 irc.add_global_handler ('ctcp', on_ctcp)
 
 #CREATE SERVER OBJECT, CONNECT TO SERVER AND JOiN CHANNELS
 server = irc.server()
 server.connect(network, port, nick, ircname=name, ssl=False)
-if password:
-	server.privmsg("NickServ","IDENTIFY %s" % password)
-time.sleep(5)
-for channel in channels:
-    server.join(channel)
 
 msgqueue = []
 
@@ -165,10 +169,8 @@ def request_refresh():
             if NextFeed:
                 break;
 
-    t1 = threading.Timer(5.0, announce_refresh)
-    t2 = threading.Timer(5.0, request_refresh)
-    t1.start()
-    t2.start()
+    threading.Timer(5.0, announce_refresh).start()
+    threading.Timer(5.0, request_refresh).start()
 
 announce_refresh()
 request_refresh()
