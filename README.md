@@ -10,6 +10,10 @@ It was designed to announce new torrent releases in a given iRC channel.
 * SSL support
 * Support for additional commands
 
+## Awesome contributors:
+
+* [grm34](https://github.com/grm34)
+
 ## License
 
 ```
