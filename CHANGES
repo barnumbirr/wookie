@@ -1,3 +1,11 @@
+Version 2.2
+=============
+
+ October 2014
+
+	* JOIN in irc.add_global_handler (grm34)
+	* bot config in external file
+
 Version 2.1
 =============
 
