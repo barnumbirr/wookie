@@ -111,9 +111,6 @@ class wookie(SingleServerIRCBot):
                     id = '{0}{1}'.format(smart_str(entry.link),
                                          smart_str(entry.title))
                     if id not in filetext:
-                        FILE = open(announce_entries_file, "a")
-                        FILE.write("{}\n".format(id))
-                        FILE.close()
                         url = smart_str(entry.link)
                         category = smart_str(entry.title).split(' -', 1)[0]
                         title = smart_str(entry.title).split('- ', 1)[1]\
@@ -132,15 +129,15 @@ class wookie(SingleServerIRCBot):
                             r'PreTime : ([0-9]{4}-[0-9]{2}-[0-9]{2} '
                             '[0-9]{2}:[0-9]{2}:[0-9]{2})', description)
                         if gPreDate is None:
-                            pretime = ""
+                            pretime = ''
                         else:
                             sPreDate = gPreDate.group(1)
                             sReleaseDate = gReleaseDate.group(1)
                             fmt = '%Y-%m-%d %H:%M:%S'
                             releaseDate = datetime.strptime(
-                                sReleaseDate, "%Y-%m-%d %H:%M:%S")
+                                sReleaseDate, '%Y-%m-%d %H:%M:%S')
                             preDate = datetime.strptime(
-                                sPreDate, "%Y-%m-%d %H:%M:%S")
+                                sPreDate, '%Y-%m-%d %H:%M:%S')
 
                             def timestamp(date):
                                 return calendar.timegm(date.timetuple())
@@ -172,10 +169,14 @@ class wookie(SingleServerIRCBot):
                             else:
                                 pretime = '{0}ans {1}jours after Pre'\
                                     .format(years, days)
-                            self.on_rss_entry(
-                                '\033[37m[\033[31m{0}\033[37m] - \033[35m'
-                                '{1}{2} \033[37m[{3}] {4}'.format(
-                                    category, url, title, size, pretime))
+
+                        self.on_rss_entry(
+                            '\033[37m[\033[31m{0}\033[37m] - \033[35m'
+                            '{1}{2} \033[37m[{3}] {4}'.format(
+                                category, url, title, size, pretime))
+                        FILE = open(announce_entries_file, "a")
+                        FILE.write("{}\n".format(id))
+                        FILE.close()
 
             threading.Timer(5.0, self.announce_refresh).start()
 
@@ -196,13 +197,13 @@ class wookie(SingleServerIRCBot):
                     id = '{0}{1}'.format(
                         smart_str(entry.link), smart_str(entry.title))
                     if id not in filetext:
-                        FILE = open(request_entries_file, "a")
-                        FILE.write(id + "\n")
-                        FILE.close()
                         title = smart_str(entry.title).split(' - ', 1)[0]
                         url = smart_str(entry.link)
                         self.on_rss_entry(
                             '\x02Requests : \x02{0} {1}'.format(title, url))
+                        FILE = open(request_entries_file, "a")
+                        FILE.write(id + "\n")
+                        FILE.close()
 
             threading.Timer(5.0, self.request_refresh).start()
 
