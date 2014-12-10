@@ -42,7 +42,7 @@ class Queue_Manager(Thread):
         self.event.set()
 
 
-class wookie(SingleServerIRCBot):
+class wookieBot(SingleServerIRCBot):
 
     def __init__(self):
         SingleServerIRCBot.__init__(
@@ -109,9 +109,9 @@ class wookie(SingleServerIRCBot):
             for feed in feeds['announce']:
                 d = feedparser.parse(feed)
                 for entry in d.entries:
-                    id = '{0}{1}'.format(smart_str(entry.link),
-                                         smart_str(entry.title))
-                    if id not in filetext:
+                    id_announce = '{0}{1}'.format(smart_str(entry.link),
+                                                  smart_str(entry.title))
+                    if id_announce not in filetext:
                         url = smart_str(entry.link)
                         category = smart_str(entry.title).split(' -', 1)[0]
                         title = smart_str(entry.title).split('- ', 1)[1]\
@@ -122,7 +122,6 @@ class wookie(SingleServerIRCBot):
                             description)
                         size = result.group(1)
                         entryDate = d.entries[0].published
-                        ReleaseDate = entryDate.split(' +', 1)[0]
                         gReleaseDate = re.search(
                             r'Ajouté le : ([0-9]{4}-[0-9]{2}-[0-9]{2} '
                             '[0-9]{2}:[0-9]{2}:[0-9]{2})', description)
@@ -134,7 +133,6 @@ class wookie(SingleServerIRCBot):
                         else:
                             sPreDate = gPreDate.group(1)
                             sReleaseDate = gReleaseDate.group(1)
-                            fmt = '%Y-%m-%d %H:%M:%S'
                             releaseDate = datetime.strptime(
                                 sReleaseDate, '%Y-%m-%d %H:%M:%S')
                             preDate = datetime.strptime(
@@ -176,7 +174,7 @@ class wookie(SingleServerIRCBot):
                             '{1}{2} \033[37m[{3}] {4}'.format(
                                 category, url, title, size, pretime))
                         FILE = open(announce_entries_file, "a")
-                        FILE.write("{}\n".format(id))
+                        FILE.write("{}\n".format(id_announce))
                         FILE.close()
 
             threading.Timer(5.0, self.announce_refresh).start()
@@ -195,16 +193,16 @@ class wookie(SingleServerIRCBot):
             for feed in feeds['request']:
                 d = feedparser.parse(feed)
                 for entry in d.entries:
-                    id = '{0}{1}'.format(
+                    id_request = '{0}{1}'.format(
                         smart_str(entry.link),
                         smart_str(entry.title).split(' - ')[0])
-                    if id not in filetext:
+                    if id_request not in filetext:
                         title = smart_str(entry.title).split(' - ', 1)[0]
                         url = smart_str(entry.link)
                         self.on_rss_entry(
                             '\x02Requests : \x02{0} {1}'.format(title, url))
                         FILE = open(request_entries_file, "a")
-                        FILE.write(id + "\n")
+                        FILE.write('{}\n'.format(id_request))
                         FILE.close()
 
             threading.Timer(5.0, self.request_refresh).start()
@@ -215,4 +213,4 @@ class wookie(SingleServerIRCBot):
                 ' the .wookie folder of your home directory!')
 
 if __name__ == "__main__":
-    wookie().start()
+    wookieBot().start()
