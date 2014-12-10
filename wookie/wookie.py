@@ -49,13 +49,13 @@ class wookie(SingleServerIRCBot):
             self, [(network['server'], network['port'])],
             network['bot_nick'], network['bot_name'])
         self.start_time = time.time()
-        for channel in network['channels']:
-            self.channel = channel
+        self.channel = network['channels']
         self.queue = Queue_Manager(self.connection)
         self.queue.start()
 
     def on_rss_entry(self, text):
-        self.queue.send(text, self.channel)
+        for channel in self.channel:
+            self.queue.send(text, channel)
 
     def on_welcome(self, serv, ev):
         if network['password']:
@@ -64,7 +64,8 @@ class wookie(SingleServerIRCBot):
                 "IDENTIFY {}".format(network['password']))
             serv.privmsg("chanserv", "SET irc_auto_rejoin ON")
             serv.privmsg("chanserv", "SET irc_join_delay 0")
-        serv.join(self.channel)
+        for channel in self.channel:
+            serv.join(channel)
         self.announce_refresh()
         self.request_refresh()
 
