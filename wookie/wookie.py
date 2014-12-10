@@ -108,74 +108,73 @@ class wookieBot(SingleServerIRCBot):
 
             for feed in feeds['announce']:
                 d = feedparser.parse(feed)
-                for entry in d.entries:
-                    id_announce = '{0}{1}'.format(smart_str(entry.link),
-                                                  smart_str(entry.title))
-                    if id_announce not in filetext:
-                        url = smart_str(entry.link)
-                        category = smart_str(entry.title).split(' -', 1)[0]
-                        title = smart_str(entry.title).split('- ', 1)[1]\
-                                                      .replace(' ', '.')
-                        description = smart_str(entry.description)
-                        result = re.search(
-                            r'Size : ([0-9]+\.?[0-9]*? [A-Za-z]{2})',
-                            description)
-                        size = result.group(1)
-                        entryDate = d.entries[0].published
-                        gReleaseDate = re.search(
-                            r'Ajouté le : ([0-9]{4}-[0-9]{2}-[0-9]{2} '
-                            '[0-9]{2}:[0-9]{2}:[0-9]{2})', description)
-                        gPreDate = re.search(
-                            r'PreTime : ([0-9]{4}-[0-9]{2}-[0-9]{2} '
-                            '[0-9]{2}:[0-9]{2}:[0-9]{2})', description)
-                        if gPreDate is None:
-                            pretime = ''
+            for entry in d.entries:
+                id_announce = '{0}{1}'.format(smart_str(entry.link),
+                                              smart_str(entry.title))
+                if id_announce not in filetext:
+                    url = smart_str(entry.link)
+                    category = smart_str(entry.title).split(' -', 1)[0]
+                    title = smart_str(entry.title).split('- ', 1)[1]\
+                                                  .replace(' ', '.')
+                    description = smart_str(entry.description)
+                    result = re.search(
+                        r'Size : ([0-9]+\.?[0-9]*? [A-Za-z]{2})',
+                        description)
+                    size = result.group(1)
+                    gReleaseDate = re.search(
+                        r'Ajouté le : ([0-9]{4}-[0-9]{2}-[0-9]{2} '
+                        '[0-9]{2}:[0-9]{2}:[0-9]{2})', description)
+                    gPreDate = re.search(
+                        r'PreTime : ([0-9]{4}-[0-9]{2}-[0-9]{2} '
+                        '[0-9]{2}:[0-9]{2}:[0-9]{2})', description)
+                    if gPreDate is None:
+                        pretime = ''
+                    else:
+                        sPreDate = gPreDate.group(1)
+                        sReleaseDate = gReleaseDate.group(1)
+                        releaseDate = datetime.strptime(
+                            sReleaseDate, '%Y-%m-%d %H:%M:%S')
+                        preDate = datetime.strptime(
+                            sPreDate, '%Y-%m-%d %H:%M:%S')
+
+                        def timestamp(date):
+                            return calendar.timegm(date.timetuple())
+
+                        pre = (timestamp(releaseDate)-timestamp(preDate))
+                        years, remainder = divmod(pre, 31556926)
+                        days, remainder1 = divmod(remainder, 86400)
+                        hours, remainder2 = divmod(remainder1, 3600)
+                        minutes, seconds = divmod(remainder2, 60)
+
+                        if pre < 60:
+                            pretime = '{}secs after Pre'\
+                                .format(seconds)
+                        elif pre < 3600:
+                            pretime = '{0}min {1}secs after Pre'\
+                                .format(minutes, seconds)
+                        elif pre < 86400:
+                            pretime = '{0}h {1}min after Pre'\
+                                .format(hours, minutes)
+                        elif pre < 172800:
+                            pretime = '{0}jour {1}h after Pre'\
+                                .format(days, hours)
+                        elif pre < 31556926:
+                            pretime = '{0}jours {1}h after Pre'\
+                                .format(days, hours)
+                        elif pre < 63113852:
+                            pretime = '{0}an {1}jours after Pre'\
+                                .format(years, days)
                         else:
-                            sPreDate = gPreDate.group(1)
-                            sReleaseDate = gReleaseDate.group(1)
-                            releaseDate = datetime.strptime(
-                                sReleaseDate, '%Y-%m-%d %H:%M:%S')
-                            preDate = datetime.strptime(
-                                sPreDate, '%Y-%m-%d %H:%M:%S')
+                            pretime = '{0}ans {1}jours after Pre'\
+                                .format(years, days)
 
-                            def timestamp(date):
-                                return calendar.timegm(date.timetuple())
-
-                            pre = (timestamp(releaseDate)-timestamp(preDate))
-                            years, remainder = divmod(pre, 31556926)
-                            days, remainder1 = divmod(remainder, 86400)
-                            hours, remainder2 = divmod(remainder1, 3600)
-                            minutes, seconds = divmod(remainder2, 60)
-
-                            if pre < 60:
-                                pretime = '{}secs after Pre'\
-                                    .format(seconds)
-                            elif pre < 3600:
-                                pretime = '{0}min {1}secs after Pre'\
-                                    .format(minutes, seconds)
-                            elif pre < 86400:
-                                pretime = '{0}h {1}min after Pre'\
-                                    .format(hours, minutes)
-                            elif pre < 172800:
-                                pretime = '{0}jour {1}h after Pre'\
-                                    .format(days, hours)
-                            elif pre < 31556926:
-                                pretime = '{0}jours {1}h after Pre'\
-                                    .format(days, hours)
-                            elif pre < 63113852:
-                                pretime = '{0}an {1}jours after Pre'\
-                                    .format(years, days)
-                            else:
-                                pretime = '{0}ans {1}jours after Pre'\
-                                    .format(years, days)
-
-                        self.on_rss_entry(
-                            '\033[37m[\033[31m{0}\033[37m] - \033[35m'
-                            '{1}{2} \033[37m[{3}] {4}'.format(
-                                category, url, title, size, pretime))
-                        FILE = open(announce_entries_file, "a")
-                        FILE.write("{}\n".format(id_announce))
-                        FILE.close()
+                    self.on_rss_entry(
+                        '\033[37m[\033[31m{0}\033[37m] - \033[35m'
+                        '{1}{2} \033[37m[{3}] {4}'.format(
+                            category, url, title, size, pretime))
+                    FILE = open(announce_entries_file, "a")
+                    FILE.write("{}\n".format(id_announce))
+                    FILE.close()
 
             threading.Timer(5.0, self.announce_refresh).start()
 
@@ -192,18 +191,18 @@ class wookieBot(SingleServerIRCBot):
 
             for feed in feeds['request']:
                 d = feedparser.parse(feed)
-                for entry in d.entries:
-                    id_request = '{0}{1}'.format(
-                        smart_str(entry.link),
-                        smart_str(entry.title).split(' - ')[0])
-                    if id_request not in filetext:
-                        title = smart_str(entry.title).split(' - ', 1)[0]
-                        url = smart_str(entry.link)
-                        self.on_rss_entry(
-                            '\x02Requests : \x02{0} {1}'.format(title, url))
-                        FILE = open(request_entries_file, "a")
-                        FILE.write('{}\n'.format(id_request))
-                        FILE.close()
+            for entry in d.entries:
+                id_request = '{0}{1}'.format(
+                    smart_str(entry.link),
+                    smart_str(entry.title).split(' - ')[0])
+                if id_request not in filetext:
+                    title = smart_str(entry.title).split(' - ', 1)[0]
+                    url = smart_str(entry.link)
+                    self.on_rss_entry(
+                        '\x02Requests : \x02{0} {1}'.format(title, url))
+                    FILE = open(request_entries_file, "a")
+                    FILE.write('{}\n'.format(id_request))
+                    FILE.close()
 
             threading.Timer(5.0, self.request_refresh).start()
 
