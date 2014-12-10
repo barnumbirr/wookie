@@ -195,7 +195,8 @@ class wookie(SingleServerIRCBot):
                 d = feedparser.parse(feed)
                 for entry in d.entries:
                     id = '{0}{1}'.format(
-                        smart_str(entry.link), smart_str(entry.title))
+                        smart_str(entry.link),
+                                  smart_str(entry.title).split(' - ')[0])
                     if id not in filetext:
                         title = smart_str(entry.title).split(' - ', 1)[0]
                         url = smart_str(entry.link)
