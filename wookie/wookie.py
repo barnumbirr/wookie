@@ -196,7 +196,7 @@ class wookie(SingleServerIRCBot):
                 for entry in d.entries:
                     id = '{0}{1}'.format(
                         smart_str(entry.link),
-                                  smart_str(entry.title).split(' - ')[0])
+                        smart_str(entry.title).split(' - ')[0])
                     if id not in filetext:
                         title = smart_str(entry.title).split(' - ', 1)[0]
                         url = smart_str(entry.link)
