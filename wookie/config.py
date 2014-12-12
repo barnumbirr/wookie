@@ -18,7 +18,7 @@ network = {
 }
 
 feeds = {
-	'delay': .5
+	'delay': .5,
 	'announce': ['https://example.com/rss/feed1'],
 	'request': ['https://example.com/rss/feed2']
 }
