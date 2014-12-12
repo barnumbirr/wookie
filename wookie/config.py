@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 
 __appname__ = "wookie"
-__version__ = "v.2.2"
-__author__  = "@c0ding"
-__date__    = "October 2014"
+__version__ = "v.3.0"
+__author__  = "@c0ding, @grm34"
+__date__    = "2012 - 2014"
 __license__ = "Apache v2.0 License"
 
 network = {
@@ -13,11 +13,12 @@ network = {
 	'SSL': False,
 	'channels': ['#channel'],
 	'bot_nick': 'wookie',
-	'bot_name': 'wookie v.2.2 is available at https://github.com/c0ding/wookie',
+	'bot_name': 'wookie v.3.0 is available at https://github.com/c0ding/wookie',
 	'password': ''
 }
 
 feeds = {
+	'delay': .5
 	'announce': ['https://example.com/rss/feed1'],
 	'request': ['https://example.com/rss/feed2']
 }

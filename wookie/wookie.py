@@ -13,14 +13,18 @@ from datetime import (datetime, timedelta)
 from config import (feeds, wookie, network)
 from django.utils.encoding import smart_str
 
-wookie_dir = os.environ.get("HOME") + wookie['path']
-announce_entries_file = '{}announce-entries'.format(wookie_dir)
-request_entries_file = '{}request-entries'.format(wookie_dir)
+__appname__ = "wookie"
+__version__ = "v.3.0"
+__author__  = "@c0ding, @grm34"
+__date__    = "2012 - 2014"
+__license__ = "Apache v2.0 License"
 
+announce_entries_file = os.environ.get("HOME") + "/.wookie/announce-entries"
+request_entries_file = os.environ.get("HOME") + "/.wookie/request-entries"
 
 class Queue_Manager(Thread):
 
-    def __init__(self, connection, delay=.5):
+    def __init__(self, connection, delay=feeds['delay']):
         Thread.__init__(self)
         self.setDaemon(1)
         self.connection = connection
