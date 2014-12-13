@@ -11,7 +11,7 @@ network = {
 	'server': 'irc.example.net',
 	'port': 6667,
 	'SSL': False,
-	'reconnection_int': 30,
+	'ipv6': False,
 	'channels': ['#channel'],
 	'bot_nick': 'wookie',
 	'bot_name': 'wookie v.3.0 is available at https://github.com/c0ding/wookie',
@@ -20,10 +20,11 @@ network = {
 
 feeds = {
     'delay': .5,
-    'announce': ['https://example.com/rss/feed1'],
-    'request': ['https://example.com/rss/feed2']
+    'announce': ['https://example.com'],
+    'request': ['https://example.com']
 }
 
 wookie = {
-	'path': 'path/to/wookie/dir'
+	'bot_owner': 'maybe_you_!',
+	'path': '/path/to/wookie/dir/'
 }

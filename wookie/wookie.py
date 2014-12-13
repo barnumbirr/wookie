@@ -2,11 +2,14 @@
 # -*- coding: utf-8 -*-
 
 import os
+import sys
+import ssl
 import time
+import irclib
 import calendar
 import threading
 import feedparser
-from ircbot import SingleServerIRCBot
+from irclib import SimpleIRCClient
 from threading import (Thread, Event)
 from datetime import (datetime, timedelta)
 from config import (feeds, wookie, network)
@@ -14,12 +17,13 @@ from django.utils.encoding import smart_str
 
 __appname__ = "wookie"
 __version__ = "v.3.0"
-__author__  = "@c0ding, @grm34"
-__date__    = "2012 - 2014"
+__author__ = "@c0ding, @grm34"
+__date__ = "2012 - 2014"
 __license__ = "Apache v2.0 License"
 
 announce_entries_file = os.environ.get("HOME") + "/.wookie/announce-entries"
 request_entries_file = os.environ.get("HOME") + "/.wookie/request-entries"
+
 
 class Queue_Manager(Thread):
 
@@ -44,21 +48,15 @@ class Queue_Manager(Thread):
         self.queue.append((msg.strip(), target))
         self.event.set()
 
-class _wookie(SingleServerIRCBot):
+
+class _wookie(SimpleIRCClient):
 
     def __init__(self):
-        SingleServerIRCBot.__init__(
-            self, [(network['server'], network['port'])],
-            network['bot_nick'], network['bot_name'],
-            reconnection_interval=network['reconnection_int'])
+        irclib.SimpleIRCClient.__init__(self)
         self.start_time = time.time()
+        self.owner = wookie['bot_owner']
         self.channel = network['channels']
         self.queue = Queue_Manager(self.connection)
-        self.queue.start()
-
-    def on_rss_entry(self, text):
-        for channel in self.channel:
-            self.queue.send(text, channel)
 
     def on_welcome(self, serv, ev):
         if network['password']:
@@ -69,8 +67,14 @@ class _wookie(SingleServerIRCBot):
             serv.privmsg("chanserv", "SET irc_join_delay 0")
         for channel in self.channel:
             serv.join(channel)
+
+        self.queue.start()
         self.announce_refresh()
         self.request_refresh()
+
+    def on_rss_entry(self, text):
+        for channel in self.channel:
+            self.queue.send(text, channel)
 
     def on_kick(self, serv, ev):
         serv.join(ev.target())
@@ -84,8 +88,27 @@ class _wookie(SingleServerIRCBot):
                 ev.source().split('!')[0], network['bot_name'])
 
     def on_pubmsg(self, serv, ev):
+        author = irclib.nm_to_n(ev.source())
+        event_time = time.strftime('[%H:%M:%S]', time.localtime())
+        print ('{} {}: {}'.format(event_time, author, ev.arguments()[0]))
         chan = ev.target()
 
+        # Owner options
+        try:
+            if (author == self.owner):
+                if ev.arguments()[0].lower() == ".restart":
+                    serv.disconnect()
+                    os.chdir(wookie['path'])
+                    os.system('nohup python wookie.py &')
+                if ev.arguments()[0].lower() == '.quit':
+                    serv.disconnect()
+                    sys.exit(1)
+        except OSError as error:
+            print (
+                '{}\nYou should specify the wookie path in'
+                ' config.py !'.format(error))
+
+        # Public Options
         if ev.arguments()[0].lower() == '.help':
             serv.privmsg(
                 chan, '\x02Available commands are\x02: .help || '
@@ -96,12 +119,6 @@ class _wookie(SingleServerIRCBot):
             uptime_raw = round(time.time() - self.start_time)
             uptime = timedelta(seconds=uptime_raw)
             serv.privmsg(chan, '\x02Uptime\x02: {}'.format(uptime))
-        if ev.arguments()[0].lower() == ".restart":
-            serv.disconnect()
-            os.chdir(wookie['path'])
-            os.system('nohup python wookie.py &')
-        if ev.arguments()[0].lower() == '.quit':
-            SingleServerIRCBot.die(self)
 
     def announce_refresh(self):
         try:
@@ -127,13 +144,13 @@ class _wookie(SingleServerIRCBot):
                         pretime = ''
                     else:
                         releaseDate = datetime.strptime(smart_str(
-                            entry.description).split('|')[2]\
-                                              .replace('Ajouté le :', '')\
+                            entry.description).split('|')[2]
+                                              .replace('Ajouté le :', '')
                                               .strip(),
                             '%Y-%m-%d %H:%M:%S')
                         preDate = datetime.strptime(smart_str(
-                            entry.description).split('|')[5]\
-                                              .replace('PreTime :', '')\
+                            entry.description).split('|')[5]
+                                              .replace('PreTime :', '')
                                               .strip(),
                             '%Y-%m-%d %H:%M:%S')
 
@@ -178,10 +195,11 @@ class _wookie(SingleServerIRCBot):
 
             threading.Timer(5.0, self.announce_refresh).start()
 
-        except IOError:
+        except IOError as error:
             print (
-                'You should create a file named announce-entries in'
-                ' the .wookie folder of your home directory!')
+                '{}\nYou should create a file named announce-entries'
+                ' in the .wookie folder of your home directory!'
+                .format(error))
 
     def request_refresh(self):
         try:
@@ -208,8 +226,21 @@ class _wookie(SingleServerIRCBot):
 
         except IOError:
             print (
-                'You should create a file named request-entries in'
-                ' the .wookie folder of your home directory!')
+                '{}\nYou should create a file named request-entries'
+                ' in the .wookie folder of your home directory!'
+                .format(error))
+
+
+def main():
+    bot = _wookie()
+    try:
+        bot.connect(
+            network['server'], network['port'], network['bot_nick'],
+            network['bot_name'], ssl=network['SSL'], ipv6=network['ipv6'])
+    except irclib.ServerConnectionError as error:
+        print (error)
+        sys.exit(1)
+    bot.start()
 
 if __name__ == "__main__":
-    _wookie().start()
+    main()
