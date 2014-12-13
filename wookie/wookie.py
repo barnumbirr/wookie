@@ -44,7 +44,7 @@ class Queue_Manager(Thread):
         self.queue.append((msg.strip(), target))
         self.event.set()
 
-class wookie(SingleServerIRCBot):
+class _wookie(SingleServerIRCBot):
 
     def __init__(self):
         SingleServerIRCBot.__init__(
@@ -98,10 +98,10 @@ class wookie(SingleServerIRCBot):
             serv.privmsg(chan, '\x02Uptime\x02: {}'.format(uptime))
         if ev.arguments()[0].lower() == ".restart":
             serv.disconnect()
-            os.chdir(wookie_dir)
+            os.chdir(wookie['path'])
             os.system('nohup python wookie.py &')
         if ev.arguments()[0].lower() == '.quit':
-            serv.disconnect()
+            SingleServerIRCBot.die(self)
 
     def announce_refresh(self):
         try:
@@ -212,4 +212,4 @@ class wookie(SingleServerIRCBot):
                 ' the .wookie folder of your home directory!')
 
 if __name__ == "__main__":
-    wookie().start()
+    _wookie().start()
