@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import re
 import os
 import time
 import calendar
@@ -45,13 +44,13 @@ class Queue_Manager(Thread):
         self.queue.append((msg.strip(), target))
         self.event.set()
 
-
-class wookieBot(SingleServerIRCBot):
+class wookie(SingleServerIRCBot):
 
     def __init__(self):
         SingleServerIRCBot.__init__(
             self, [(network['server'], network['port'])],
-            network['bot_nick'], network['bot_name'])
+            network['bot_nick'], network['bot_name'],
+            reconnection_interval=network['reconnection_int'])
         self.start_time = time.time()
         self.channel = network['channels']
         self.queue = Queue_Manager(self.connection)
@@ -117,29 +116,26 @@ class wookieBot(SingleServerIRCBot):
                                               smart_str(entry.title))
                 if id_announce not in filetext:
                     url = smart_str(entry.link)
+                    title = smart_str(
+                        entry.title).split('- ', 1)[1].replace(' ', '.')
+                    size = smart_str(
+                        entry.description).split('|')[1]\
+                                          .replace('Size :', '')\
+                                          .strip()
                     category = smart_str(entry.title).split(' -', 1)[0]
-                    title = smart_str(entry.title).split('- ', 1)[1]\
-                                                  .replace(' ', '.')
-                    description = smart_str(entry.description)
-                    result = re.search(
-                        r'Size : ([0-9]+\.?[0-9]*? [A-Za-z]{2})',
-                        description)
-                    size = result.group(1)
-                    gReleaseDate = re.search(
-                        r'Ajouté le : ([0-9]{4}-[0-9]{2}-[0-9]{2} '
-                        '[0-9]{2}:[0-9]{2}:[0-9]{2})', description)
-                    gPreDate = re.search(
-                        r'PreTime : ([0-9]{4}-[0-9]{2}-[0-9]{2} '
-                        '[0-9]{2}:[0-9]{2}:[0-9]{2})', description)
-                    if gPreDate is None:
+                    if len(entry.description.split('|')) == 5:
                         pretime = ''
                     else:
-                        sPreDate = gPreDate.group(1)
-                        sReleaseDate = gReleaseDate.group(1)
-                        releaseDate = datetime.strptime(
-                            sReleaseDate, '%Y-%m-%d %H:%M:%S')
-                        preDate = datetime.strptime(
-                            sPreDate, '%Y-%m-%d %H:%M:%S')
+                        releaseDate = datetime.strptime(smart_str(
+                            entry.description).split('|')[2]\
+                                              .replace('Ajouté le :', '')\
+                                              .strip(),
+                            '%Y-%m-%d %H:%M:%S')
+                        preDate = datetime.strptime(smart_str(
+                            entry.description).split('|')[5]\
+                                              .replace('PreTime :', '')\
+                                              .strip(),
+                            '%Y-%m-%d %H:%M:%S')
 
                         def timestamp(date):
                             return calendar.timegm(date.timetuple())
@@ -216,4 +212,4 @@ class wookieBot(SingleServerIRCBot):
                 ' the .wookie folder of your home directory!')
 
 if __name__ == "__main__":
-    wookieBot().start()
+    wookie().start()

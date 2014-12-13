@@ -1,24 +1,24 @@
   
   Analyzing: https://github.com/c0ding/wookie/wookie.py
 
-              Total Lines: 213
+              Total Lines: 215
 
-               Code Lines: 183 (85.9154%)
-              Blank Lines: 29 (13.6150%)
+               Code Lines: 185 (86.0465%)
+              Blank Lines: 29 (13.4883%)
 
-            Comment Lines: 1 (0.46948%)
+            Comment Lines: 1 (0.46511%)
          Doc String Lines: 0 (0.0%)
           Inline Comments: 1
               Doc Strings: 0
            Total Comments: 2
 
         Longest Code Line: 76
-       Shortest Code Line: 19 [wookieBot().start()]
+       Shortest Code Line: 16 [wookie().start()]
 
      Longest Comment Line: 23
     Shortest Comment Line: 23 [# -*- coding: utf-8 ...]
 
-                  Imports: 15
+                  Imports: 14
                 Functions: 13
                   Classes: 2
             If Statements: 19
@@ -26,7 +26,7 @@
         Except Statements: 2
          Print Statements: 2
               Assignments: 50
-                Variables: 40
+                Variables: 38
 
 
   Done analyzing: https://github.com/c0ding/wookie/wookie.py
@@ -36,12 +36,12 @@
 
   Analyzing: https://github.com/c0ding/wookie/config.py
 
-              Total Lines: 28
+              Total Lines: 29
 
-               Code Lines: 23 (82.1428%)
-              Blank Lines: 4 (14.2857%)
+               Code Lines: 24 (82.7586%)
+              Blank Lines: 4 (13.7931%)
 
-            Comment Lines: 1 (3.57142%)
+            Comment Lines: 1 (3.44827%)
          Doc String Lines: 0 (0.0%)
           Inline Comments: 2
               Doc Strings: 0
