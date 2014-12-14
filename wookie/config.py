@@ -29,5 +29,5 @@ wookie = {
 	'path': '/path/to/wookie/dir/',
 	'start_bot': 'screen -dmS wookie',
 	'kill_bot': 'screen -X -S wookie kill',
-	'mode': '' # Leave this empty !
+	'mode': '' # Please, leave this empty !
 }

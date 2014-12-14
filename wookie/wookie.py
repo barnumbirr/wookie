@@ -55,8 +55,6 @@ class _wookie(SimpleIRCClient):
     def __init__(self):
         irclib.SimpleIRCClient.__init__(self)
         self.start_time = time.time()
-        self.owner = wookie['bot_owner']
-        self.channel = network['channels']
         self.queue = Queue_Manager(self.connection)
 
     def on_welcome(self, serv, ev):
@@ -66,7 +64,7 @@ class _wookie(SimpleIRCClient):
                 "IDENTIFY {}".format(network['password']))
             serv.privmsg("chanserv", "SET irc_auto_rejoin ON")
             serv.privmsg("chanserv", "SET irc_join_delay 0")
-        for channel in self.channel:
+        for channel in network['channels']:
             serv.join(channel)
 
         self.queue.start()
@@ -74,7 +72,7 @@ class _wookie(SimpleIRCClient):
         self.request_refresh()
 
     def on_rss_entry(self, text):
-        for channel in self.channel:
+        for channel in network['channels']:
             self.queue.send(text, channel)
 
     def on_kick(self, serv, ev):
@@ -88,6 +86,30 @@ class _wookie(SimpleIRCClient):
             serv.ctcp_reply(
                 ev.source().split('!')[0], network['bot_name'])
 
+    def on_privmsg(self, serv, ev):
+        author = irclib.nm_to_n(ev.source())
+        message = ev.arguments()[0].strip()
+        arguments = message.split(' ')
+
+        if author in wookie['bot_owner']:
+            if '!say' == arguments[0]:
+                serv.privmsg(arguments[1], message.replace('!say', '')
+                             .replace(arguments[1], '')[2:])
+            elif '!act' == arguments[0]:
+                serv.action(arguments[1], message.replace('!act', '')
+                            .replace(arguments[1], '')[2:])
+            elif '!j' == arguments[0]:
+                serv.join(message[3:])
+            elif '!p' == arguments[0]:
+                serv.part(message[3:])
+            else:
+                serv.privmsg(author, "n00b {} ! Tu causes à ton bot là !"
+                             .format(author))
+        else:
+            serv.privmsg(author, "Hey {}, t'as craqué ou quoi ? "
+                         "Tu causes à un bot là, spice de n00b !"
+                         .format(author))
+
     def on_pubmsg(self, serv, ev):
         author = irclib.nm_to_n(ev.source())
         event_time = time.strftime('[%H:%M:%S]', time.localtime())
@@ -96,21 +118,23 @@ class _wookie(SimpleIRCClient):
 
         # Owner(s) options
         try:
-            if author in self.owner:
+            if author in wookie['bot_owner']:
 
-                if ev.arguments()[0].lower() == ".restart":
+                if ev.arguments()[0].lower() == '.restart':
                     serv.disconnect()
-                    if wookie['mode'] == 'screen':
+                    if not wookie['mode']:
                         os.system(wookie['kill_bot'])
-                        os.system('{0} {1}./wookie.py start'.format(
+                        os.system('{1} {2}./wookie.py run'.format(
                             wookie['start_bot'], wookie['path']))
-                        sys.exit(1)
                     else:
-                        os.system('{0}./wookie.py start'.format(
-                            wookie['path']))
+                        os.system('{0}./wookie.py start'
+                                  .format(wookie['path']))
+                    sys.exit(1)
+
                 if ev.arguments()[0].lower() == '.quit':
                     serv.disconnect()
-                    os.system(wookie['kill_bot'])
+                    if not wookie['mode']:
+                        os.system(wookie['kill_bot'])
                     sys.exit(1)
 
         except OSError as error:
@@ -155,11 +179,11 @@ class _wookie(SimpleIRCClient):
                         releaseDate = datetime.strptime(smart_str(
                             entry.description).split('|')[2].replace(
                                 smart_str('Ajouté le :'), '').strip(),
-                                '%Y-%m-%d %H:%M:%S')
+                            '%Y-%m-%d %H:%M:%S')
                         preDate = datetime.strptime(smart_str(
                             entry.description).split('|')[5].replace(
                                 'PreTime :', '').strip(),
-                                '%Y-%m-%d %H:%M:%S')
+                            '%Y-%m-%d %H:%M:%S')
 
                         def timestamp(date):
                             return calendar.timegm(date.timetuple())
@@ -245,15 +269,19 @@ def main():
         '<screen> to run wookie in detached screen'
     parser = optparse.OptionParser(usage=usage)
     (options, args) = parser.parse_args()
-    if len(args) != 1 and (args[0] != 'start' or args[0] != 'screen'):
+    if len(args) != 1 and (
+            args[0] != 'start' or
+            args[0] != 'screen' or args[0] != 'run'):
         parser.print_help()
         parser.exit(1)
 
     if args[0] == 'screen':
-        wookie['mode'] = 'screen'
-        os.system('{0} {1}./wookie.py start'.format(
+        os.system('{0} {1}./wookie.py run'.format(
             wookie['start_bot'], wookie['path']))
         sys.exit(1)
+
+    if args[0] == 'start':
+        wookie['mode'] = 'standard'
 
     bot = _wookie()
     try:
