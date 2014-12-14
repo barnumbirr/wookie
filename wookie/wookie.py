@@ -7,6 +7,7 @@ import ssl
 import time
 import irclib
 import calendar
+import optparse
 import threading
 import feedparser
 from irclib import SimpleIRCClient
@@ -93,16 +94,25 @@ class _wookie(SimpleIRCClient):
         print ('{} {}: {}'.format(event_time, author, ev.arguments()[0]))
         chan = ev.target()
 
-        # Owner options
+        # Owner(s) options
         try:
-            if (author == self.owner):
+            if author in self.owner:
+
                 if ev.arguments()[0].lower() == ".restart":
                     serv.disconnect()
-                    os.chdir(wookie['path'])
-                    os.system('nohup python wookie.py &')
+                    if wookie['mode'] == 'screen':
+                        os.system(wookie['kill_bot'])
+                        os.system('{0} {1}./wookie.py start'.format(
+                            wookie['start_bot'], wookie['path']))
+                        sys.exit(1)
+                    else:
+                        os.system('{0}./wookie.py start'.format(
+                            wookie['path']))
                 if ev.arguments()[0].lower() == '.quit':
                     serv.disconnect()
+                    os.system(wookie['kill_bot'])
                     sys.exit(1)
+
         except OSError as error:
             print (
                 '{}\nYou should specify the wookie path in'
@@ -229,6 +239,22 @@ class _wookie(SimpleIRCClient):
 
 
 def main():
+
+    usage = './wookie.py <start> or <screen>\n\n'\
+        '<start> to run wookie in standard mode\n'\
+        '<screen> to run wookie in detached screen'
+    parser = optparse.OptionParser(usage=usage)
+    (options, args) = parser.parse_args()
+    if len(args) != 1 and (args[0] != 'start' or args[0] != 'screen'):
+        parser.print_help()
+        parser.exit(1)
+
+    if args[0] == 'screen':
+        wookie['mode'] = 'screen'
+        os.system('{0} {1}./wookie.py start'.format(
+            wookie['start_bot'], wookie['path']))
+        sys.exit(1)
+
     bot = _wookie()
     try:
         bot.connect(
