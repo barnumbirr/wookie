@@ -136,23 +136,20 @@ class _wookie(SimpleIRCClient):
                     title = smart_str(
                         entry.title).split('- ', 1)[1].replace(' ', '.')
                     size = smart_str(
-                        entry.description).split('|')[1]\
-                                          .replace('Size :', '')\
-                                          .strip()
+                        entry.description).split('|')[1].replace(
+                            'Size :', '').strip()
                     category = smart_str(entry.title).split(' -', 1)[0]
                     if len(entry.description.split('|')) == 5:
                         pretime = ''
                     else:
                         releaseDate = datetime.strptime(smart_str(
-                            entry.description).split('|')[2]
-                                              .replace('Ajouté le :', '')
-                                              .strip(),
-                            '%Y-%m-%d %H:%M:%S')
+                            entry.description).split('|')[2].replace(
+                                smart_str('Ajouté le :'), '').strip(),
+                                '%Y-%m-%d %H:%M:%S')
                         preDate = datetime.strptime(smart_str(
-                            entry.description).split('|')[5]
-                                              .replace('PreTime :', '')
-                                              .strip(),
-                            '%Y-%m-%d %H:%M:%S')
+                            entry.description).split('|')[5].replace(
+                                'PreTime :', '').strip(),
+                                '%Y-%m-%d %H:%M:%S')
 
                         def timestamp(date):
                             return calendar.timegm(date.timetuple())
