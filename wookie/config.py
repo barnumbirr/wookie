@@ -28,6 +28,5 @@ wookie = {
 	'bot_owner': ['maybe_you_!'],
 	'path': '/path/to/wookie/dir/',
 	'start_bot': 'screen -dmS wookie',
-	'kill_bot': 'screen -X -S wookie kill',
 	'mode': '' # Please, leave this empty !
 }

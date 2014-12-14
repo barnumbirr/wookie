@@ -10,6 +10,7 @@ import calendar
 import optparse
 import threading
 import feedparser
+import commands
 from irclib import SimpleIRCClient
 from threading import (Thread, Event)
 from datetime import (datetime, timedelta)
@@ -81,6 +82,15 @@ class _wookie(SimpleIRCClient):
     def on_invite(self, serv, ev):
         serv.join(ev.arguments()[0])
 
+    def get_current_screen(self):
+        screen_list = commands.getoutput('screen -list')
+        screen_lines = smart_str(
+            screen_list.replace('\t', '')).splitlines()
+        for screen in screen_lines:
+            if 'wookie' in screen:
+                current_screen = screen.split('.')[0]
+        return current_screen
+
     def on_ctcp(self, serv, ev):
         if ev.arguments()[0].upper() == 'VERSION':
             serv.ctcp_reply(
@@ -123,9 +133,11 @@ class _wookie(SimpleIRCClient):
                 if ev.arguments()[0].lower() == '.restart':
                     serv.disconnect()
                     if not wookie['mode']:
-                        os.system(wookie['kill_bot'])
-                        os.system('{1} {2}./wookie.py run'.format(
-                            wookie['start_bot'], wookie['path']))
+                        current_screen = self.get_current_screen()
+                        os.system('{0} {1}./wookie.py run && screen -X -S'
+                                  ' {2} kill'.format(wookie['start_bot'],
+                                                     wookie['path'],
+                                                     current_screen))
                     else:
                         os.system('{0}./wookie.py start'
                                   .format(wookie['path']))
