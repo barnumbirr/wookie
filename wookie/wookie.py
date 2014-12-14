@@ -7,10 +7,10 @@ import ssl
 import time
 import irclib
 import calendar
+import commands
 import optparse
 import threading
 import feedparser
-import commands
 from irclib import SimpleIRCClient
 from threading import (Thread, Event)
 from datetime import (datetime, timedelta)
@@ -83,13 +83,17 @@ class _wookie(SimpleIRCClient):
         serv.join(ev.arguments()[0])
 
     def get_current_screen(self):
-        screen_list = commands.getoutput('screen -list')
-        screen_lines = smart_str(
-            screen_list.replace('\t', '')).splitlines()
-        for screen in screen_lines:
-            if 'wookie' in screen:
-                current_screen = screen.split('.')[0]
-        return current_screen
+        try:
+            screen_list = commands.getoutput('screen -list')
+            screen_lines = smart_str(
+                screen_list.replace('\t', '')).splitlines()
+            for screen in screen_lines:
+                if 'wookie' in screen:
+                    current_screen = screen.split('.')[0]
+            return current_screen
+        except OSError as error:
+            print(error)
+            sys.exit(1)
 
     def on_ctcp(self, serv, ev):
         if ev.arguments()[0].upper() == 'VERSION':
@@ -267,7 +271,7 @@ class _wookie(SimpleIRCClient):
 
             threading.Timer(5.0, self.request_refresh).start()
 
-        except IOError:
+        except IOError as error:
             print (
                 '{}\nYou should create a file named request-entries'
                 ' in the .wookie folder of your home directory!'
