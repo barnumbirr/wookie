@@ -103,11 +103,11 @@ class _wookie(SimpleIRCClient):
             elif '!p' == arguments[0]:
                 serv.part(message[3:])
             else:
-                serv.privmsg(author, "n00b {} ! Tu causes à ton bot là !"
+                serv.privmsg(author, "n00b {} ! You are talking to a bot !"
                              .format(author))
         else:
-            serv.privmsg(author, "Hey {}, t'as craqué ou quoi ? "
-                         "Tu causes à un bot là, spice de n00b !"
+            serv.privmsg(author, "Hey {}, are you ok ? "
+                         "You are talking to a bot man !"
                          .format(author))
 
     def on_pubmsg(self, serv, ev):
