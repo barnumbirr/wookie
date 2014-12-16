@@ -8,11 +8,11 @@ __date__ = "2012 - 2014"
 __license__ = "Apache v2.0 License"
 
 network = {
-    'server': 'irc.bakaserv.net',
+    'server': 'irc.example.net',
     'port': 6667,
     'SSL': False,
     'ipv6': False,
-    'channels': ['#test'],
+    'channels': ['#channel'],
     'bot_nick': 'wookie',
     'bot_name': 'wookie v.3.0 is available at '
                 'https://github.com/c0ding/wookie',
