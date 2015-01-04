@@ -23,13 +23,10 @@ __author__ = "@c0ding, @grm34"
 __date__ = "2012 - 2014"
 __license__ = "Apache v2.0 License"
 
-announce_entries_file = os.environ.get("HOME") + "/.wookie/announce-entries"
-request_entries_file = os.environ.get("HOME") + "/.wookie/request-entries"
-
 
 class Queue_Manager(Thread):
 
-    def __init__(self, connection, delay=feeds['delay']):
+    def __init__(self, connection, delay=feeds['irc_delay']):
         Thread.__init__(self)
         self.setDaemon(1)
         self.connection = connection
@@ -61,16 +58,33 @@ class _wookie(SimpleIRCClient):
     def on_welcome(self, serv, ev):
         if network['password']:
             serv.privmsg(
-                "nickserv",
-                "IDENTIFY {}".format(network['password']))
+                "nickserv", "IDENTIFY {}".format(network['password']))
             serv.privmsg("chanserv", "SET irc_auto_rejoin ON")
             serv.privmsg("chanserv", "SET irc_join_delay 0")
         for channel in network['channels']:
             serv.join(channel)
 
-        self.queue.start()
+        self.history_manager()
         self.announce_refresh()
         self.request_refresh()
+        time.sleep(5)
+        self.queue.start()
+
+    def history_manager(self):
+        home = '{}/.wookie'.format(os.environ.get('HOME'))
+        self.wookie_path = os.path.dirname(os.path.realpath(__file__))
+        self.announce_entries = '{}/announce-entries'.format(home)
+        self.request_entries = '{}/request-entries'.format(home)
+        try:
+            if os.path.exists(home) is False:
+                os.system('mkdir {}'.format(home))
+            if os.path.exists(self.announce_entries) is False:
+                os.system('touch {}'.format(self.announce_entries))
+            if os.path.exists(self.request_entries) is False:
+                os.system('touch {}'.format(self.request_entries))
+        except OSError as error:
+            print(error)
+            sys.exit(1)
 
     def on_rss_entry(self, text):
         for channel in network['channels']:
@@ -104,178 +118,154 @@ class _wookie(SimpleIRCClient):
         author = irclib.nm_to_n(ev.source())
         message = ev.arguments()[0].strip()
         arguments = message.split(' ')
-
         if author in wookie['bot_owner']:
-            if '!say' == arguments[0]:
-                serv.privmsg(arguments[1], message.replace('!say', '')
-                             .replace(arguments[1], '')[2:])
-            elif '!act' == arguments[0]:
-                serv.action(arguments[1], message.replace('!act', '')
-                            .replace(arguments[1], '')[2:])
-            elif '!j' == arguments[0]:
+            if '.say' == arguments[0]:
+                serv.privmsg(
+                    arguments[1], message.replace(arguments[0], '')
+                                         .replace(arguments[1], '')[2:])
+            if '.act' == arguments[0]:
+                serv.action(
+                    arguments[1], message.replace(arguments[0], '')
+                                         .replace(arguments[1], '')[2:])
+            if '.join' == arguments[0]:
                 serv.join(message[3:])
-            elif '!p' == arguments[0]:
+            if '.part' == arguments[0]:
                 serv.part(message[3:])
-            else:
-                serv.privmsg(author, "n00b {} ! You are talking to a bot !"
-                             .format(author))
-        else:
-            serv.privmsg(author, "Hey {}, are you ok ? "
-                         "You are talking to a bot man !"
-                         .format(author))
 
     def on_pubmsg(self, serv, ev):
         author = irclib.nm_to_n(ev.source())
         event_time = time.strftime('[%H:%M:%S]', time.localtime())
-        print ('{} {}: {}'.format(event_time, author, ev.arguments()[0]))
+        print ('{0} {1}: {2}'.format(event_time, author, ev.arguments()[0]))
         chan = ev.target()
+        if author in wookie['bot_owner']:
 
-        # Owner(s) options
-        try:
-            if author in wookie['bot_owner']:
+            if ev.arguments()[0].lower() == '.restart':
+                serv.disconnect()
+                if wookie['mode'] == 'screen':
+                    current_screen = self.get_current_screen()
+                    os.system(
+                        '{0} {1}/./wookie.py run && screen -X -S'
+                        ' {2} kill'.format(wookie['start_bot'],
+                                           self.wookie_path,
+                                           current_screen))
+                else:
+                    os.system('{}/./wookie.py start'
+                              .format(self.wookie_path))
+                sys.exit(1)
 
-                if ev.arguments()[0].lower() == '.restart':
-                    serv.disconnect()
-                    if not wookie['mode']:
-                        current_screen = self.get_current_screen()
-                        os.system('{0} {1}./wookie.py run && screen -X -S'
-                                  ' {2} kill'.format(wookie['start_bot'],
-                                                     wookie['path'],
-                                                     current_screen))
-                    else:
-                        os.system('{0}./wookie.py start'
-                                  .format(wookie['path']))
-                    sys.exit(1)
+            if ev.arguments()[0].lower() == '.quit':
+                serv.disconnect()
+                if not wookie['mode']:
+                    os.system(wookie['kill_bot'])
+                sys.exit(1)
 
-                if ev.arguments()[0].lower() == '.quit':
-                    serv.disconnect()
-                    if not wookie['mode']:
-                        os.system(wookie['kill_bot'])
-                    sys.exit(1)
-
-        except OSError as error:
-            print (
-                '{}\nYou should specify the wookie path in'
-                ' config.py !'.format(error))
-
-        # Public Options
         if ev.arguments()[0].lower() == '.help':
             serv.privmsg(
                 chan, '\x02Available commands are\x02: .help || '
                       '.version || .uptime || .restart || .quit')
+
         if ev.arguments()[0].lower() == '.version':
             serv.privmsg(chan, network['bot_name'])
+
         if ev.arguments()[0].lower() == '.uptime':
             uptime_raw = round(time.time() - self.start_time)
             uptime = timedelta(seconds=uptime_raw)
             serv.privmsg(chan, '\x02Uptime\x02: {}'.format(uptime))
 
     def announce_refresh(self):
-        try:
-            FILE = open(announce_entries_file, "r")
-            filetext = FILE.read()
-            FILE.close()
+        FILE = open(self.announce_entries, "r")
+        filetext = FILE.read()
+        FILE.close()
 
-            for feed in feeds['announce']:
-                d = feedparser.parse(feed)
-            for entry in d.entries:
-                id_announce = '{0}{1}'.format(smart_str(entry.link),
-                                              smart_str(entry.title))
-                if id_announce not in filetext:
-                    url = smart_str(entry.link)
-                    title = smart_str(
-                        entry.title).split('- ', 1)[1].replace(' ', '.')
-                    size = smart_str(
-                        entry.description).split('|')[1].replace(
-                            'Size :', '').strip()
-                    category = smart_str(entry.title).split(' -', 1)[0]
-                    if len(entry.description.split('|')) == 5:
-                        pretime = ''
+        for feed in feeds['announce']:
+            d = feedparser.parse(feed)
+        for entry in d.entries:
+            id_announce = '{0}{1}'.format(smart_str(entry.link),
+                                          smart_str(entry.title))
+            if id_announce not in filetext:
+                url = smart_str(entry.link)
+                title = smart_str(
+                    entry.title).split('- ', 1)[1].replace(' ', '.')
+                size = smart_str(
+                    entry.description).split('|')[1].replace(
+                        'Size :', '').strip()
+                category = smart_str(entry.title).split(' -', 1)[0]
+                if len(entry.description.split('|')) == 5:
+                    pretime = ''
+                else:
+                    releaseDate = datetime.strptime(smart_str(
+                        entry.description).split('|')[2].replace(
+                            smart_str('Ajouté le :'), '').strip(),
+                        '%Y-%m-%d %H:%M:%S')
+                    preDate = datetime.strptime(smart_str(
+                        entry.description).split('|')[5].replace(
+                            'PreTime :', '').strip(),
+                        '%Y-%m-%d %H:%M:%S')
+
+                    def timestamp(date):
+                        return calendar.timegm(date.timetuple())
+
+                    pre = (timestamp(releaseDate)-timestamp(preDate))
+                    years, remainder = divmod(pre, 31556926)
+                    days, remainder1 = divmod(remainder, 86400)
+                    hours, remainder2 = divmod(remainder1, 3600)
+                    minutes, seconds = divmod(remainder2, 60)
+
+                    if pre < 60:
+                        pretime = '{}secs after Pre'\
+                            .format(seconds)
+                    elif pre < 3600:
+                        pretime = '{0}min {1}secs after Pre'\
+                            .format(minutes, seconds)
+                    elif pre < 86400:
+                        pretime = '{0}h {1}min after Pre'\
+                            .format(hours, minutes)
+                    elif pre < 172800:
+                        pretime = '{0}jour {1}h after Pre'\
+                            .format(days, hours)
+                    elif pre < 31556926:
+                        pretime = '{0}jours {1}h after Pre'\
+                            .format(days, hours)
+                    elif pre < 63113852:
+                        pretime = '{0}an {1}jours after Pre'\
+                            .format(years, days)
                     else:
-                        releaseDate = datetime.strptime(smart_str(
-                            entry.description).split('|')[2].replace(
-                                smart_str('Ajouté le :'), '').strip(),
-                            '%Y-%m-%d %H:%M:%S')
-                        preDate = datetime.strptime(smart_str(
-                            entry.description).split('|')[5].replace(
-                                'PreTime :', '').strip(),
-                            '%Y-%m-%d %H:%M:%S')
+                        pretime = '{0}ans {1}jours after Pre'\
+                            .format(years, days)
 
-                        def timestamp(date):
-                            return calendar.timegm(date.timetuple())
+                self.on_rss_entry(
+                    '\033[37m[\033[31m{0}\033[37m] - \033[35m'
+                    '{1}{2} \033[37m[{3}] {4}'.format(
+                        category, url, title, size, pretime))
+                FILE = open(self.announce_entries, "a")
+                FILE.write("{}\n".format(id_announce))
+                FILE.close()
 
-                        pre = (timestamp(releaseDate)-timestamp(preDate))
-                        years, remainder = divmod(pre, 31556926)
-                        days, remainder1 = divmod(remainder, 86400)
-                        hours, remainder2 = divmod(remainder1, 3600)
-                        minutes, seconds = divmod(remainder2, 60)
-
-                        if pre < 60:
-                            pretime = '{}secs after Pre'\
-                                .format(seconds)
-                        elif pre < 3600:
-                            pretime = '{0}min {1}secs after Pre'\
-                                .format(minutes, seconds)
-                        elif pre < 86400:
-                            pretime = '{0}h {1}min after Pre'\
-                                .format(hours, minutes)
-                        elif pre < 172800:
-                            pretime = '{0}jour {1}h after Pre'\
-                                .format(days, hours)
-                        elif pre < 31556926:
-                            pretime = '{0}jours {1}h after Pre'\
-                                .format(days, hours)
-                        elif pre < 63113852:
-                            pretime = '{0}an {1}jours after Pre'\
-                                .format(years, days)
-                        else:
-                            pretime = '{0}ans {1}jours after Pre'\
-                                .format(years, days)
-
-                    self.on_rss_entry(
-                        '\033[37m[\033[31m{0}\033[37m] - \033[35m'
-                        '{1}{2} \033[37m[{3}] {4}'.format(
-                            category, url, title, size, pretime))
-                    FILE = open(announce_entries_file, "a")
-                    FILE.write("{}\n".format(id_announce))
-                    FILE.close()
-
-            threading.Timer(5.0, self.announce_refresh).start()
-
-        except IOError as error:
-            print (
-                '{}\nYou should create a file named announce-entries'
-                ' in the .wookie folder of your home directory!'
-                .format(error))
+        threading.Timer(
+            feeds['announce_delay'], self.announce_refresh).start()
 
     def request_refresh(self):
-        try:
-            FILE = open(request_entries_file, "r")
-            filetext = FILE.read()
-            FILE.close()
+        FILE = open(self.request_entries, "r")
+        filetext = FILE.read()
+        FILE.close()
 
-            for feed in feeds['request']:
-                d = feedparser.parse(feed)
-            for entry in d.entries:
-                id_request = '{0}{1}'.format(
-                    smart_str(entry.link),
-                    smart_str(entry.title).split(' - ')[0])
-                if id_request not in filetext:
-                    title = smart_str(entry.title).split(' - ', 1)[0]
-                    url = smart_str(entry.link)
-                    self.on_rss_entry(
-                        '\x02Requests : \x02{0} {1}'.format(title, url))
-                    FILE = open(request_entries_file, "a")
-                    FILE.write('{}\n'.format(id_request))
-                    FILE.close()
+        for feed in feeds['request']:
+            d = feedparser.parse(feed)
+        for entry in d.entries:
+            id_request = '{0}{1}'.format(
+                smart_str(entry.link),
+                smart_str(entry.title).split(' - ')[0])
+            if id_request not in filetext:
+                title = smart_str(entry.title).split(' - ', 1)[0]
+                url = smart_str(entry.link)
+                self.on_rss_entry(
+                    '\x02Requests : \x02{0} {1}'.format(title, url))
+                FILE = open(self.request_entries, "a")
+                FILE.write('{}\n'.format(id_request))
+                FILE.close()
 
-            threading.Timer(5.0, self.request_refresh).start()
-
-        except IOError as error:
-            print (
-                '{}\nYou should create a file named request-entries'
-                ' in the .wookie folder of your home directory!'
-                .format(error))
+        threading.Timer(
+            feeds['request_delay'], self.request_refresh).start()
 
 
 def main():
@@ -292,18 +282,18 @@ def main():
         parser.exit(1)
 
     if args[0] == 'screen':
-        os.system('{0} {1}./wookie.py run'.format(
-            wookie['start_bot'], wookie['path']))
+        wookie['mode'] = 'screen'
+        os.system('{0} {1}/./wookie.py run'.format(
+            wookie['start_bot'], os.path.dirname(
+                os.path.realpath(__file__))))
         sys.exit(1)
-
-    if args[0] == 'start':
-        wookie['mode'] = 'standard'
 
     bot = _wookie()
     try:
         bot.connect(
-            network['server'], network['port'], network['bot_nick'],
-            network['bot_name'], ssl=network['SSL'], ipv6=network['ipv6'])
+            network['server'], network['port'],
+            network['bot_nick'], network['bot_name'],
+            ssl=network['SSL'], ipv6=network['ipv6'])
     except irclib.ServerConnectionError as error:
         print (error)
         sys.exit(1)

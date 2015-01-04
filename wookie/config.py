@@ -20,15 +20,16 @@ network = {
 }
 
 feeds = {
-    'delay': .5,
-    'announce': ['https://example.com/rss/feeds1'],
-    'request': ['https://example.com/rss/feeds2']
+    'irc_delay': .5,
+    'announce_delay': 5.0,
+    'request_delay': 5.0,
+    'announce': ['https://example/rss/feeds1'],
+    'request': ['https://example/rss/feeds2']
 }
 
 wookie = {
-    'bot_owner': ['maybe_you_!'],
-    'path': '/path/to/wookie/dir/',
+    'bot_owner': ['maybe_you!'],
     'start_bot': 'screen -dmS wookie',
     'kill_bot': 'screen -X -S wookie kill',
-    'mode': ''
+    'mode': 'standard'
 }
