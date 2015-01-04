@@ -138,25 +138,28 @@ class _wookie(SimpleIRCClient):
         print ('{0} {1}: {2}'.format(event_time, author, ev.arguments()[0]))
         chan = ev.target()
         if author in wookie['bot_owner']:
+            try:
+                if ev.arguments()[0].lower() == '.restart':
+                    serv.disconnect()
+                    if wookie['mode'] == 'screen':
+                        current_screen = self.get_current_screen()
+                        os.system(
+                            '{0} {1}/./wookie.py run && screen -X -S'
+                            ' {2} kill'.format(wookie['start_bot'],
+                                               self.wookie_path,
+                                               current_screen))
+                    else:
+                        os.system('{}/./wookie.py start'
+                                  .format(self.wookie_path))
+                    sys.exit(1)
 
-            if ev.arguments()[0].lower() == '.restart':
-                serv.disconnect()
-                if wookie['mode'] == 'screen':
-                    current_screen = self.get_current_screen()
-                    os.system(
-                        '{0} {1}/./wookie.py run && screen -X -S'
-                        ' {2} kill'.format(wookie['start_bot'],
-                                           self.wookie_path,
-                                           current_screen))
-                else:
-                    os.system('{}/./wookie.py start'
-                              .format(self.wookie_path))
-                sys.exit(1)
-
-            if ev.arguments()[0].lower() == '.quit':
-                serv.disconnect()
-                if not wookie['mode']:
-                    os.system(wookie['kill_bot'])
+                if ev.arguments()[0].lower() == '.quit':
+                    serv.disconnect()
+                    if not wookie['mode']:
+                        os.system(wookie['kill_bot'])
+                    sys.exit(1)
+            except OSError as error:
+                print(error)
                 sys.exit(1)
 
         if ev.arguments()[0].lower() == '.help':
@@ -275,29 +278,35 @@ def main():
         '<screen> to run wookie in detached screen'
     parser = optparse.OptionParser(usage=usage)
     (options, args) = parser.parse_args()
-    if len(args) != 1 and (
-            args[0] != 'start' or
-            args[0] != 'screen' or args[0] != 'run'):
+    if len(args) == 1 and (
+            args[0] == 'start' or
+            args[0] == 'screen' or
+            args[0] == 'run'):
+        bot = _wookie()
+    else:
         parser.print_help()
         parser.exit(1)
 
-    if args[0] == 'screen':
-        wookie['mode'] = 'screen'
-        os.system('{0} {1}/./wookie.py run'.format(
-            wookie['start_bot'], os.path.dirname(
-                os.path.realpath(__file__))))
-        sys.exit(1)
-
-    bot = _wookie()
     try:
+        if args[0] == 'screen':
+            wookie['mode'] = 'screen'
+            os.system('{0} {1}/./wookie.py run'.format(
+                wookie['start_bot'], os.path.dirname(
+                    os.path.realpath(__file__))))
+            sys.exit(1)
+
         bot.connect(
             network['server'], network['port'],
             network['bot_nick'], network['bot_name'],
             ssl=network['SSL'], ipv6=network['ipv6'])
+        bot.start()
+
+    except OSError as error:
+        print(error)
+        sys.exit(1)
     except irclib.ServerConnectionError as error:
         print (error)
         sys.exit(1)
-    bot.start()
 
 if __name__ == "__main__":
     main()
