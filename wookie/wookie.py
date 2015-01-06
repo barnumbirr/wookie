@@ -74,6 +74,7 @@ class _wookie(SimpleIRCClient):
             time.sleep(5)
             self.queue.start()
         except (OSError, IOError) as error:
+            serv.disconnect()
             print(error)
             sys.exit(1)
 
