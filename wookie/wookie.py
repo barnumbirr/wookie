@@ -178,9 +178,12 @@ class _wookie(SimpleIRCClient):
             added = smart_str(data[0]['attrs']['added'])
             comments = smart_str(data[0]['attrs']['comments'])
             size = self.get_nice_size(int(data[0]['attrs']['size']))
-            pre = smart_str(data[0]['attrs']['pretime'])
+            predate = smart_str(data[0]['attrs']['pretime'])
             pretime = ''
-            if pre != '0':
+            if predate != '0':
+                releaseDate = datetime.strptime(
+                    added, '%Y-%m-%d %H:%M:%S')
+                pre = (self.timestamp(releaseDate)-(int(predate)+3600))
                 pretime = ' | \x02Pretime:\x02 {}'.format(
                     self.get_rls_pretime(int(pre)))
 
@@ -250,7 +253,7 @@ class _wookie(SimpleIRCClient):
             try:
                 self.search_release(serv, ev, message, chan)
             except (HTTPError, URLError, KeyError,
-                    ValueError, TypeError) as error:
+                    ValueError, TypeError, AttributeError) as error:
                 serv.privmsg(chan, "[ERROR] {}".format(str(error)))
                 pass
 
