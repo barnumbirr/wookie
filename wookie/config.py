@@ -7,8 +7,15 @@ __author__ = "@c0ding, @grm34"
 __date__ = "2012 - 2014"
 __license__ = "Apache v2.0 License"
 
+wookie = {
+    'bot_owner': ['maybe_you!'],
+    'start_bot': 'screen -dmS wookie',
+    'kill_bot': 'screen -X -S wookie kill',
+    'mode': 'standard'
+}
+
 network = {
-    'server': 'irc.example.net',
+    'server': 'irc.example.com',
     'port': 6667,
     'SSL': False,
     'ipv6': False,
@@ -23,13 +30,11 @@ feeds = {
     'irc_delay': .5,
     'announce_delay': 5.0,
     'request_delay': 5.0,
-    'announce': ['https://example/rss/feeds1'],
-    'request': ['https://example/rss/feeds2']
+    'announce': ['https://example.com/rss/feeds1'],
+    'request': ['https://example.com/rss/feeds2']
 }
 
-wookie = {
-    'bot_owner': ['maybe_you!'],
-    'start_bot': 'screen -dmS wookie',
-    'kill_bot': 'screen -X -S wookie kill',
-    'mode': 'standard'
+api = {
+    'api_url': 'https://example.com/api/',
+    'authkey': ''
 }
