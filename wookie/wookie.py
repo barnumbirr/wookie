@@ -7,6 +7,7 @@ import ssl
 import json
 import time
 import irclib
+import socket
 import urllib2
 import calendar
 import commands
@@ -249,12 +250,15 @@ class _wookie(SimpleIRCClient):
             uptime = timedelta(seconds=uptime_raw)
             serv.privmsg(chan, '\x02Uptime\x02: {}'.format(uptime))
 
-        if len(arguments) > 1 and '.get' == arguments[0].lower():
+        if '.get' == arguments[0].lower() and len(arguments) > 1:
             try:
                 self.search_release(serv, ev, message, chan)
             except (HTTPError, URLError, KeyError,
                     ValueError, TypeError, AttributeError) as error:
                 serv.privmsg(chan, "[ERROR] {}".format(str(error)))
+                pass
+            except socket.timeout:
+                serv.privmsg(chan, "[ERROR] API timeout...")
                 pass
 
     def announce_refresh(self):
