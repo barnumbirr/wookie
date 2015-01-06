@@ -110,11 +110,9 @@ class _wookie(SimpleIRCClient):
         serv.disconnect()
         if wookie['mode'] == 'screen':
             current_screen = self.get_current_screen()
-            os.system(
-                '{0} {1}/./wookie.py run && screen -X -S'
-                ' {2} kill'.format(wookie['start_bot'],
-                                   self.wookie_path,
-                                   current_screen))
+            os.system('{0} {1}/./wookie.py run && screen -X -S {2} kill'
+                      .format(wookie['start_bot'], self.wookie_path,
+                              current_screen))
         else:
             os.system('{}/./wookie.py start'
                       .format(self.wookie_path))
