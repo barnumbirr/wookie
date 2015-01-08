@@ -161,7 +161,7 @@ class _wookie(SimpleIRCClient):
         data = loads(urlopen('{0}{1}{2}{3}{4}{5}'.format(
             api['api_url'], 'torrent/search&ak=',
             api['authkey'], '&q=',
-            message[5:].strip().replace(' ', '+'),
+            message[5:].strip().replace(' ', '+').replace('.', '+'),
             '&nb=1'), None, 5.0).read())
 
         if data[0]['id']:
@@ -200,17 +200,17 @@ class _wookie(SimpleIRCClient):
         message = ev.arguments()[0].strip()
         arguments = message.split(' ')
         if author in wookie['bot_owner']:
-            if '.say' == arguments[0]:
+            if '.say' == arguments[0] and len(arguments) > 2:
                 serv.privmsg(
                     arguments[1], message.replace(arguments[0], '')
                                          .replace(arguments[1], '')[2:])
-            if '.act' == arguments[0]:
+            if '.act' == arguments[0] and len(arguments) > 2:
                 serv.action(
                     arguments[1], message.replace(arguments[0], '')
                                          .replace(arguments[1], '')[2:])
-            if '.join' == arguments[0]:
+            if '.join' == arguments[0] and len(arguments) > 2:
                 serv.join(message[3:])
-            if '.part' == arguments[0]:
+            if '.part' == arguments[0] and len(arguments) > 2:
                 serv.part(message[3:])
 
     def on_pubmsg(self, serv, ev):
