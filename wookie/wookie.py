@@ -161,39 +161,36 @@ class _wookie(SimpleIRCClient):
         data = loads(urlopen('{0}{1}{2}{3}{4}{5}'.format(
             api['api_url'], 'torrent/search&ak=',
             api['authkey'], '&q=',
-            message[5:].strip().replace(' ', '+').replace('.', '+'),
+            smart_str(message[5:].replace(' ', '+').replace('.', '+')),
             '&nb=1'), None, 5.0).read())
 
-        if data[0]['id']:
-            id = smart_str(data[0]['id'])
-            title = smart_str(data[0]['attrs']['name']).replace(' ', '.')
-            url = '{0}{1}{2}/{3}'.format(
-                api['api_url'].replace('api/', ''),
-                'torrent/', id, title)
-            completed = smart_str(data[0]['attrs']['times_completed'])
-            leechers = smart_str(data[0]['attrs']['leechers'])
-            seeders = smart_str(data[0]['attrs']['seeders'])
-            added = smart_str(data[0]['attrs']['added'])
-            comments = smart_str(data[0]['attrs']['comments'])
-            size = self.get_nice_size(int(data[0]['attrs']['size']))
-            predate = smart_str(data[0]['attrs']['pretime'])
-            pretime = ''
-            if predate != '0':
-                releaseDate = datetime.strptime(
-                    added, '%Y-%m-%d %H:%M:%S')
-                pre = (self.timestamp(releaseDate)-(int(predate)+3600))
-                pretime = ' | \x02Pretime:\x02 {}'.format(
-                    self.get_rls_pretime(int(pre)))
+        id = smart_str(data[0]['id'])
+        title = smart_str(data[0]['attrs']['name']).replace(' ', '.')
+        url = '{0}{1}{2}/{3}'.format(
+            api['api_url'].replace('api/', ''),
+            'torrent/', id, title)
+        completed = smart_str(data[0]['attrs']['times_completed'])
+        leechers = smart_str(data[0]['attrs']['leechers'])
+        seeders = smart_str(data[0]['attrs']['seeders'])
+        added = smart_str(data[0]['attrs']['added'])
+        comments = smart_str(data[0]['attrs']['comments'])
+        size = self.get_nice_size(int(data[0]['attrs']['size']))
+        predate = smart_str(data[0]['attrs']['pretime'])
+        pretime = ''
+        if predate != '0':
+            releaseDate = datetime.strptime(
+                added, '%Y-%m-%d %H:%M:%S')
+            pre = (self.timestamp(releaseDate)-(int(predate)+3600))
+            pretime = ' | \x02Pretime:\x02 {}'.format(
+                self.get_rls_pretime(int(pre)))
 
-            serv.privmsg(chan, '\x02{0}:\x02 {1}'.format(title, url))
-            serv.privmsg(
-                chan, '\x02Added on:\x02 {0}{1} | \x02Size:\x02 {2} '
-                '| \x02Seeders:\x02 {3} | \x02Leechers:\x02 {4} '
-                '| \x02Completed:\x02 {5} | \x02Comments:\x02 {6}'
-                .format(added, pretime, size, seeders,
-                        leechers, completed, comments))
-        else:
-            serv.privmsg(chan, 'Nothing found, sorry about this.')
+        serv.privmsg(chan, '\x02{0}:\x02 {1}'.format(title, url))
+        serv.privmsg(
+            chan, '\x02Added on:\x02 {0}{1} | \x02Size:\x02 {2} '
+            '| \x02Seeders:\x02 {3} | \x02Leechers:\x02 {4} '
+            '| \x02Completed:\x02 {5} | \x02Comments:\x02 {6}'
+            .format(added, pretime, size, seeders,
+                    leechers, completed, comments))
 
     def on_privmsg(self, serv, ev):
         author = irclib.nm_to_n(ev.source())
@@ -251,8 +248,8 @@ class _wookie(SimpleIRCClient):
             try:
                 self.search_release(serv, ev, message, chan)
             except (HTTPError, URLError, KeyError,
-                    ValueError, TypeError, AttributeError) as error:
-                serv.privmsg(chan, "[ERROR] {}".format(str(error)))
+                    ValueError, TypeError, AttributeError):
+                serv.privmsg(chan, 'Nothing found, sorry about this.')
                 pass
             except socket.timeout:
                 serv.privmsg(chan, "[ERROR] API timeout...")
