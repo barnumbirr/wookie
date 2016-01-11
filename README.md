@@ -12,11 +12,9 @@ It was designed to announce new torrent releases in a given iRC channel.
 
 ## Required:
 
-`apt-get install python-pip && python-beautifulsoup`
+`apt-get install python-pip`
 
-`pip install feedparser`
-
-`pip install django`
+`pip install feedparser django`
 
 `wget http://sourceforge.net/projects/python-irclib/files/python-irclib/0.4.8/python-irclib-0.4.8.tar.gz`
 
