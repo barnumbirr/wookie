@@ -1,3 +1,14 @@
+Version 3.2
+=============
+
+ January 2016
+
+    * add blacklist entries
+    * add easy irc colors
+    * all pubmsg logged to irc-entries
+    * logs moved to /home/USERNAME/.wookie_logs
+    * fix API issues [.get]
+
 Version 3.0
 =============
 

@@ -9,6 +9,9 @@ It was designed to announce new torrent releases in a given iRC channel.
 * No heavy database required
 * SSL support
 * Support for additional commands
+* Blacklist entries
+* IRC Colors
+* API Search
 
 ## Required:
 

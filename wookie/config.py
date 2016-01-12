@@ -2,39 +2,44 @@
 # -*- coding: utf-8 -*-
 
 __appname__ = "wookie"
-__version__ = "v.3.0"
+__version__ = "v.3.2"
 __author__ = "@c0ding, @grm34"
-__date__ = "2012 - 2014"
+__date__ = "2012...2016"
 __license__ = "Apache v2.0 License"
 
 wookie = {
-    'bot_owner': ['maybe_you!'],
+    'bot_owner': [''],
     'start_bot': 'screen -dmS wookie',
     'kill_bot': 'screen -X -S wookie kill',
     'mode': 'standard'
 }
 
 network = {
-    'server': 'irc.example.com',
+    'server': '',
     'port': 6667,
     'SSL': False,
     'ipv6': False,
-    'channels': ['#channel'],
+    'channels': [''],
     'bot_nick': 'wookie',
-    'bot_name': 'wookie v.3.0 is available at '
-                'https://github.com/c0ding/wookie',
+    'bot_name': 'wookie v.3.2 is available at '
+                'https://github.com/mrsmn/wookie',
     'password': ''
 }
 
 feeds = {
-    'irc_delay': .5,
+    'queue_delay': .5,
     'announce_delay': 5.0,
     'request_delay': 5.0,
-    'announce': ['https://example.com/rss/feeds1'],
-    'request': ['https://example.com/rss/feeds2']
+    'announce': [''],
+    'request': ['']
 }
 
 api = {
-    'api_url': 'https://example.com/api/',
+    'api_url': '',
     'authkey': ''
+}
+
+blacklist = {
+    'announce': ['test1', 'test2', 'test3'],
+    'request': ['test1', 'test2', 'test3']
 }
