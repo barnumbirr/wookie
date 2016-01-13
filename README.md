@@ -31,6 +31,18 @@ It was designed to announce new torrent releases in a given iRC channel.
 
 * [grm34](https://github.com/grm34)
 
+## Install:
+
+`cd /home/USERNAME`
+
+`git clone https://github.com/mrsmn/wookie.git`
+
+`cd wookie/wookie`
+
+Edit the config.py file to suit your needs, then:
+
+`python wookie.py <start> or <screen>`
+
 ## License
 
 ```
