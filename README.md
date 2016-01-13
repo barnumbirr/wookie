@@ -1,4 +1,6 @@
-<h1><img src="https://raw.github.com/c0ding/wookie/master/doc/wookie.png" height=70 alt="wookie" title="wookie">wookie</h1> [![Code Health](https://landscape.io/github/grm34/wookie/master/landscape.svg?style=flat)](https://landscape.io/github/grm34/wookie/master)
+<h1><img src="https://raw.github.com/c0ding/wookie/master/doc/wookie.png" height=70 alt="wookie" title="wookie">wookie  <a href="https://landscape.io/github/grm34/wookie/master">
+  <img alt="Code Health" src="https://landscape.io/github/grm34/wookie/master/landscape.svg?style=flat"/>
+</a></h1>
 
 **wookie** is a simple, open source, easy-to-use iRC RSS bot written in Python.
 It was designed to announce new torrent releases in a given iRC channel.
