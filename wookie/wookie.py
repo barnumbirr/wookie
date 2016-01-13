@@ -350,7 +350,7 @@ class _wookie(SimpleIRCClient):
                     entry.title).split(' - ', 1)[0].replace(' ', '.')
                 url = smart_str(entry.link)
                 self.on_rss_entry(
-                    '{2}{4}[REQUEST]{3} {0} {6}{1}{5}'.format(
+                    '{2}{4}[REQUEST]{3} {0}: {6}{1}{5}'.format(
                         title, url, self.BOLD, self.BLACK,
                         self.PURPLE, self.END, self.BLUE))
                 FILE = open(self.request_entries, "a")
