@@ -27,10 +27,6 @@ It was designed to announce new torrent releases in a given iRC channel.
 
 `python install.py`
 
-## Awesome contributors:
-
-* [grm34](https://github.com/grm34)
-
 ## Install:
 
 `cd /home/USERNAME`
@@ -42,6 +38,10 @@ It was designed to announce new torrent releases in a given iRC channel.
 Edit the config.py file to suit your needs, then:
 
 `python wookie.py <start> or <screen>`
+
+## Awesome contributors:
+
+* [grm34](https://github.com/grm34)
 
 ## License
 
