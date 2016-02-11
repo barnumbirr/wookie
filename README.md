@@ -1,6 +1,4 @@
-<h1><img src="https://raw.github.com/c0ding/wookie/master/doc/wookie.png" height=70 alt="wookie" title="wookie">wookie  <a href="https://landscape.io/github/grm34/wookie/master">
-  <img alt="Code Health" src="https://landscape.io/github/grm34/wookie/master/landscape.svg?style=flat"/>
-</a></h1>
+<h1><img src="https://raw.githubusercontent.com/mrsmn/wookie/master/doc/wookie.png" height=70 alt="wookie" title="wookie">wookie</a></h1>
 
 **wookie** is a simple, open source, easy-to-use iRC RSS bot written in Python.
 It was designed to announce new torrent releases in a given iRC channel.
@@ -17,27 +15,27 @@ It was designed to announce new torrent releases in a given iRC channel.
 
 ## Required:
 
-`apt-get install python-pip`
+```
+$ apt-get install python-pip  
+$ pip install feedparser django  
+$ wget http://sourceforge.net/projects/python-irclib/files/python-irclib/0.4.8/python-irclib-0.4.8.tar.gz  
+$ tar -zxvf python-irclib-0.4.8.tar.gz && rm python-irclib-0.4.8.tar.gz && cd python-irclib-0.4.8  
+$ python setup install
+```
 
-`pip install feedparser django`
+## Installation:
 
-`wget http://sourceforge.net/projects/python-irclib/files/python-irclib/0.4.8/python-irclib-0.4.8.tar.gz`
-
-`tar -zxvf python-irclib-0.4.8.tar.gz && rm python-irclib-0.4.8.tar.gz && cd python-irclib-0.4.8`
-
-`python install.py`
-
-## Install:
-
-`cd /home/USERNAME`
-
-`git clone https://github.com/mrsmn/wookie.git`
-
-`cd wookie/wookie`
+```
+$ cd /home/<username>  
+$ git clone https://github.com/mrsmn/wookie.git  
+$ cd wookie/wookie
+```
 
 Edit the config.py file to suit your needs, then:
 
-`python wookie.py <start> or <screen>`
+```
+$ python wookie.py <start> or <screen>
+```
 
 ## Awesome contributors:
 
@@ -47,7 +45,7 @@ Edit the config.py file to suit your needs, then:
 
 ```
   Apache v2.0 License
-  Copyright 2014 Martin Simon
+  Copyright 2012-2016 Martin Simon, Jérémy Pardo
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.

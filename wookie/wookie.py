@@ -22,13 +22,6 @@ from django.utils.encoding import smart_str
 from urllib2 import (urlopen, URLError, HTTPError)
 from config import (feeds, wookie, network, api, blacklist)
 
-__appname__ = "wookie"
-__version__ = "v.3.2"
-__author__ = "@c0ding, @grm34"
-__date__ = "2012...2016"
-__license__ = "Apache v2.0 License"
-
-
 class Queue_Manager(Thread):
 
     def __init__(self, connection, delay=feeds['queue_delay']):
