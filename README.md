@@ -20,7 +20,7 @@ $ apt-get install python-pip
 $ pip install feedparser django  
 $ wget http://sourceforge.net/projects/python-irclib/files/python-irclib/0.4.8/python-irclib-0.4.8.tar.gz  
 $ tar -zxvf python-irclib-0.4.8.tar.gz && rm python-irclib-0.4.8.tar.gz && cd python-irclib-0.4.8  
-$ python setup install
+$ python setup.py install
 ```
 
 ## Installation:
